@@ -51,7 +51,8 @@ urlpatterns = [
     # --- PDF Generation URL ---
     # Generate PDF for a specific prescription
     path('prescription/<int:pk>/pdf/', views.generate_prescription_pdf, name='generate_prescription_pdf'),
-
+    path('prescription/<int:pk>/mark_paid/', views.mark_prescription_as_paid, name='mark_prescription_as_paid'),
+    
     # --- DrugInteraction URLs (for future admin/management, optional for now) ---
     # You might add views for DrugInteraction later if needed for non-admin CRUD.
     # For now, it's primarily managed via Django Admin or by the DL model.

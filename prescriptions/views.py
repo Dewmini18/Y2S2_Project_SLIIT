@@ -2,11 +2,11 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.db import transaction # Used for atomic operations (e.g., stock management)
 from django.contrib import messages # For displaying user feedback messages
 from django.http import HttpResponse
-
+from django.db.models.deletion import ProtectedError
 # Import models and forms from your prescriptions app
 from .models import Patient, Doctor, Prescription, PrescriptionItem, DrugInteraction
 from .forms import PatientForm, DoctorForm, PrescriptionForm, PrescriptionItemForm
@@ -89,11 +89,13 @@ class PatientDeleteView(DeleteView):
     # URL to redirect to after successful patient deletion.
     success_url = reverse_lazy('patient_list')
 
-    def form_valid(self, form):
-        # Called if the form is valid. Deletes the patient and displays a success message.
-        messages.success(self.request, "Patient deleted successfully!")
-        return super().form_valid(form)
-
+    def post(self, request, *args, **kwargs):
+        try:
+            return super().post(request, *args, **kwargs)
+        except ProtectedError:
+            messages.error(request, "This patient cannot be deleted because they are associated with an existing prescription.")
+            return redirect('patient_list')
+    
 
 # --- Doctor CRUD Views ---
 # These views handle the creation, listing, updating, and deleting of Doctor records.
@@ -145,9 +147,12 @@ class DoctorDeleteView(DeleteView):
     template_name = 'prescriptions/doctor_confirm_delete.html'
     success_url = reverse_lazy('doctor_list')
 
-    def form_valid(self, form):
-        messages.success(self.request, "Doctor deleted successfully!")
-        return super().form_valid(form)
+    def post(self, request, *args, **kwargs):
+        try:
+            return super().post(request, *args, **kwargs)
+        except ProtectedError:
+            messages.error(request, "This doctor cannot be deleted because they are associated with an existing prescription.")
+            return redirect('doctor_list')
 
 
 # --- Prescription CRUD Views ---
@@ -219,6 +224,9 @@ class PrescriptionDetailView(DetailView):
         if 'confirm_needed' in self.request.session:
             confirm_data = self.request.session.pop('confirm_needed') # Get and remove from session
             context.update(confirm_data) # Add confirmation data to context
+        
+        # ADDED: Add the total cost to the context for display
+        context['total_cost'] = self.object.total_cost
         
         return context
 
@@ -449,242 +457,156 @@ class PrescriptionDeleteView(DeleteView):
     success_url = reverse_lazy('prescription_list')
 
     def form_valid(self, form):
-        with transaction.atomic():
-            # Before deleting the prescription, return all dispensed quantities to stock.
-            for item in self.object.items.all():
-                medicine_in_stock = Medicine.objects.select_for_update().get(pk=item.medicine.pk)
-                medicine_in_stock.quantity_in_stock += item.dispensed_quantity
-                medicine_in_stock.save()
-                messages.info(self.request, f"Returned {item.dispensed_quantity} units of {item.medicine.name} (batch {item.medicine.batch_number}) to stock.")
+        try:
+            self.object.delete()
+            messages.success(self.request, "Prescription was successfully deleted.")
+            return redirect(self.success_url)
+        except ProtectedError:
+            messages.error(self.request, "This prescription cannot be deleted because it has a related payment. Please cancel the payment instead.")
+            return redirect('prescription_detail', pk=self.object.pk)
 
-            # Now delete the prescription (this will cascade delete PrescriptionItems).
-            response = super().form_valid(form)
-            messages.success(self.request, "Prescription deleted successfully and all stock returned.")
-            return response
+
+# ADDED: A new function-based view to mark a prescription as paid.
+def mark_prescription_as_paid(request, pk):
+    prescription = get_object_or_404(Prescription, pk=pk)
+
+    # We only want to handle POST requests to update the payment status.
+    if request.method == 'POST':
+        with transaction.atomic():
+            prescription.is_paid = True
+            prescription.save()
+        messages.success(request, f"Prescription #{prescription.id} has been marked as paid.")
+    else:
+        messages.error(request, "Invalid request method.")
+    
+    return redirect('prescription_detail', pk=prescription.pk)
 
 
 # --- PDF Generation View ---
+# This view generates a PDF of the prescription details.
 
 def generate_prescription_pdf(request, pk):
-    return 0;
-#     prescription = get_object_or_404(Prescription, pk=pk)
+    # ADDED: Get the prescription and its items with a single query for efficiency
+    prescription = get_object_or_404(Prescription.objects.prefetch_related('items__medicine'), pk=pk)
 
-#     # Create a file-like buffer to receive PDF data.
-#     buffer = io.BytesIO()
+    # Create a file-like buffer to receive PDF data.
+    buffer = io.BytesIO()
 
-#     # Construct the HTML content for the PDF
-#     html_content = f"""
-#     <!DOCTYPE html>
-#     <html>
-#     <head>
-#         <title>Prescription #{prescription.id}</title>
-#         <style>
-#             body {{ font-family: sans-serif; margin: 0.75in; font-size: 10pt; }}
-#             .header {{ text-align: center; margin-bottom: 20pt; }}
-#             .header h1 {{ font-size: 24pt; margin-bottom: 5pt; color: #1a202c; }}
-#             .header p {{ font-size: 9pt; color: #4a5568; }}
-#             .line {{ border-bottom: 1pt solid #cbd5e0; margin-top: 20pt; margin-bottom: 30pt; }}
-#             .section-title {{ font-size: 14pt; font-weight: bold; text-align: center; margin-bottom: 20pt; color: #2d3748; }}
-#             .info-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; margin-bottom: 20pt; }}
-#             .info-item {{ margin-bottom: 5pt; }}
-#             .info-item strong {{ font-weight: bold; color: #2d3748; }}
-#             table {{ width: 100%; border-collapse: collapse; margin-bottom: 20pt; }}
-#             th, td {{ border: 1pt solid #e2e8f0; padding: 8pt; text-align: left; vertical-align: middle; }}
-#             th {{ background-color: #f7fafc; font-weight: bold; text-align: center; color: #2d3748; }}
-#             .quantity-cell {{ text-align: center; }}
-#             .notes-section {{ margin-top: 30pt; }}
-#             .notes-section h3 {{ font-size: 12pt; font-weight: bold; margin-bottom: 10pt; color: #2d3748; }}
-#             .footer {{ text-align: center; margin-top: 40pt; font-size: 10pt; color: #4a5568; }}
-#             .footer strong {{ font-weight: bold; }}
-#         </style>
-#     </head>
-#     <body>
-#         <div class="header">
-#             <h1>Your Pharmacy Name</h1>
-#             <p>123 Pharmacy Lane, City, Country | Phone: (123) 456-7890</p>
-#         </div>
-#         <div class="line"></div>
+    # Generate table rows first
+    table_rows = "".join([
+        f"""
+        <tr>
+            <td>{item.medicine.name} ({item.medicine.batch_number})</td>
+            <td>{item.dosage}</td>
+            <td class="quantity-cell">{item.dispensed_quantity}</td>
+            <td>{item.medicine.description or 'N/A'}</td>
+            <td class="quantity-cell">${item.total_price:.2f}</td>
+        </tr>
+        """ for item in prescription.items.all()
+    ])
 
-#         <h2 class="section-title">Prescription Details</h2>
-
-#         <div class="info-grid">
-#             <div class="info-item">
-#                 <strong>Prescription ID:</strong> {prescription.id}
-#             </div>
-#             <div class="info-item">
-#                 <strong>Date:</strong> {prescription.prescription_date.strftime('%Y-%m-%d')}
-#             </div>
-#             <div class="info-item">
-#                 <strong>Patient:</strong> {prescription.patient.first_name} {prescription.patient.last_name} (DOB: {prescription.patient.date_of_birth.strftime('%Y-%m-%d')})
-#             </div>
-#             <div class="info-item">
-#                 <strong>Doctor:</strong> Dr. {prescription.doctor.first_name} {prescription.doctor.last_name} (Code: {prescription.doctor.medical_code}) ({prescription.doctor.specialization or 'N/A'})
-#             </div>
-#         </div>
-
-#         <table>
-#             <thead>
-#                 <tr>
-#                     <th>Medicine Name</th>
-#                     <th>Dosage</th>
-#                     <th class="quantity-cell">Quantity</th>
-#                     <th>Description</th>
-#                 </tr>
-#             </thead>
-#             <tbody>
-#                 {"".join([
-#                     f"""
-#                     <tr>
-#                         <td>{item.medicine.name} ({item.medicine.batch_number})</td>
-#                         <td>{item.dosage}</td>
-#                         <td class="quantity-cell">{item.dispensed_quantity}</td>
-#                         <td>{item.medicine.description or 'N/A'}</td>
-#                     </tr>
-#                     """ for item in prescription.items.all()
-#                 ])}
-#             </tbody>
-#         </table>
-
-#         {" " if not prescription.notes else f"""
-#         <div class="notes-section">
-#             <h3>Notes:</h3>
-#             <p>{prescription.notes}</p>
-#         </div>
-#         """}
-
-#         <div class="footer">
-#             <p>Please present this PDF at the billing counter for payment.</p>
-#             <p><strong>Thank you for choosing our pharmacy!</strong></p>
-#         </div>
-#     </body>
-#     </html>
-#     """
-
-#     # Generate PDF from HTML content using WeasyPrint
-#     HTML(string=html_content).write_pdf(buffer)
-
-#     # Get the value of the BytesIO buffer and set up the HTTP response.
-#     buffer.seek(0)
-#     return HttpResponse(buffer, content_type='application/pdf')
-
-
-
-
-
-
-
-
-
-
-# --- PDF Generation View (commented out for now) ---# This view generates a PDF of the prescription details.
-# Uncomment and adjust as needed for your application
-
-# def generate_prescription_pdf(request, pk):
+    # Prepare the notes section separately
+    notes_section_html = ""
+    if prescription.notes:
+        notes_section_html = f"""
+        <div class="notes-section">
+            <h3>Notes:</h3>
+            <p>{prescription.notes}</p>
+        </div>
+        """
     
-#     prescription = get_object_or_404(Prescription, pk=pk)
+    # ADDED: Determine payment status string
+    payment_status = "Paid" if prescription.is_paid else "Unpaid"
 
-#     # Create a file-like buffer to receive PDF data.
-#     buffer = io.BytesIO()
+    # Construct the HTML content for the PDF
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Prescription #{prescription.id}</title>
+        <style>
+            body {{ font-family: sans-serif; margin: 0.75in; font-size: 10pt; }}
+            .header {{ text-align: center; margin-bottom: 20pt; }}
+            .header h1 {{ font-size: 24pt; margin-bottom: 5pt; color: #1a202c; }}
+            .header p {{ font-size: 9pt; color: #4a5568; }}
+            .line {{ border-bottom: 1pt solid #cbd5e0; margin-top: 20pt; margin-bottom: 30pt; }}
+            .section-title {{ font-size: 14pt; font-weight: bold; text-align: center; margin-bottom: 20pt; color: #2d3748; }}
+            .info-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; margin-bottom: 20pt; }}
+            .info-item {{ margin-bottom: 5pt; }}
+            .info-item strong {{ font-weight: bold; color: #2d3748; }}
+            table {{ width: 100%; border-collapse: collapse; margin-bottom: 20pt; }}
+            th, td {{ border: 1pt solid #e2e8f0; padding: 8pt; text-align: left; vertical-align: middle; }}
+            th {{ background-color: #f7fafc; font-weight: bold; text-align: center; color: #2d3748; }}
+            .quantity-cell {{ text-align: center; }}
+            .notes-section {{ margin-top: 30pt; }}
+            .notes-section h3 {{ font-size: 12pt; font-weight: bold; margin-bottom: 10pt; color: #2d3748; }}
+            .footer {{ text-align: center; margin-top: 40pt; font-size: 10pt; color: #4a5568; }}
+            .footer strong {{ font-weight: bold; }}
+            .total-cost {{ font-size: 12pt; font-weight: bold; text-align: right; margin-top: 10pt; }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Your Pharmacy Name</h1>
+            <p>123 Pharmacy Lane, City, Country | Phone: (123) 456-7890</p>
+        </div>
+        <div class="line"></div>
 
-#     # Generate table rows first
-#     table_rows = "".join([
-#         f"""
-#         <tr>
-#             <td>{item.medicine.name} ({item.medicine.batch_number})</td>
-#             <td>{item.dosage}</td>
-#             <td class="quantity-cell">{item.dispensed_quantity}</td>
-#             <td>{item.medicine.description or 'N/A'}</td>
-#         </tr>
-#         """ for item in prescription.items.all()
-#     ])
+        <h2 class="section-title">Prescription Details</h2>
 
-#     # --- FIX: Prepare the notes section separately ---
-#     notes_section_html = ""
-#     if prescription.notes:
-#         notes_section_html = f"""
-#         <div class="notes-section">
-#             <h3>Notes:</h3>
-#             <p>{prescription.notes}</p>
-#         </div>
-#         """
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>Prescription ID:</strong> {prescription.id}
+            </div>
+            <div class="info-item">
+                <strong>Date:</strong> {prescription.prescription_date.strftime('%Y-%m-%d')}
+            </div>
+            <div class="info-item">
+                <strong>Patient:</strong> {prescription.patient.first_name} {prescription.patient.last_name} (DOB: {prescription.patient.date_of_birth.strftime('%Y-%m-%d')})
+            </div>
+            <div class="info-item">
+                <strong>Doctor:</strong> Dr. {prescription.doctor.first_name} {prescription.doctor.last_name} (Code: {prescription.doctor.medical_code}) ({prescription.doctor.specialization or 'N/A'})
+            </div>
+            <div class="info-item">
+                <strong>Payment Status:</strong> {payment_status}
+            </div>
+        </div>
 
-#     # Construct the HTML content for the PDF
-#     html_content = f"""
-#     <!DOCTYPE html>
-#     <html>
-#     <head>
-#         <title>Prescription #{prescription.id}</title>
-#         <style>
-#             body {{ font-family: sans-serif; margin: 0.75in; font-size: 10pt; }}
-#             .header {{ text-align: center; margin-bottom: 20pt; }}
-#             .header h1 {{ font-size: 24pt; margin-bottom: 5pt; color: #1a202c; }}
-#             .header p {{ font-size: 9pt; color: #4a5568; }}
-#             .line {{ border-bottom: 1pt solid #cbd5e0; margin-top: 20pt; margin-bottom: 30pt; }}
-#             .section-title {{ font-size: 14pt; font-weight: bold; text-align: center; margin-bottom: 20pt; color: #2d3748; }}
-#             .info-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; margin-bottom: 20pt; }}
-#             .info-item {{ margin-bottom: 5pt; }}
-#             .info-item strong {{ font-weight: bold; color: #2d3748; }}
-#             table {{ width: 100%; border-collapse: collapse; margin-bottom: 20pt; }}
-#             th, td {{ border: 1pt solid #e2e8f0; padding: 8pt; text-align: left; vertical-align: middle; }}
-#             th {{ background-color: #f7fafc; font-weight: bold; text-align: center; color: #2d3748; }}
-#             .quantity-cell {{ text-align: center; }}
-#             .notes-section {{ margin-top: 30pt; }}
-#             .notes-section h3 {{ font-size: 12pt; font-weight: bold; margin-bottom: 10pt; color: #2d3748; }}
-#             .footer {{ text-align: center; margin-top: 40pt; font-size: 10pt; color: #4a5568; }}
-#             .footer strong {{ font-weight: bold; }}
-#         </style>
-#     </head>
-#     <body>
-#         <div class="header">
-#             <h1>Your Pharmacy Name</h1>
-#             <p>123 Pharmacy Lane, City, Country | Phone: (123) 456-7890</p>
-#         </div>
-#         <div class="line"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Medicine Name</th>
+                    <th>Dosage</th>
+                    <th class="quantity-cell">Quantity</th>
+                    <th>Description</th>
+                    <th class="quantity-cell">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {table_rows}
+            </tbody>
+        </table>
+        
+        <div class="total-cost">
+            Total Cost: ${prescription.total_cost:.2f}
+        </div>
 
-#         <h2 class="section-title">Prescription Details</h2>
+        {notes_section_html}
 
-#         <div class="info-grid">
-#             <div class="info-item">
-#                 <strong>Prescription ID:</strong> {prescription.id}
-#             </div>
-#             <div class="info-item">
-#                 <strong>Date:</strong> {prescription.prescription_date.strftime('%Y-%m-%d')}
-#             </div>
-#             <div class="info-item">
-#                 <strong>Patient:</strong> {prescription.patient.first_name} {prescription.patient.last_name} (DOB: {prescription.patient.date_of_birth.strftime('%Y-%m-%d')})
-#             </div>
-#             <div class="info-item">
-#                 <strong>Doctor:</strong> Dr. {prescription.doctor.first_name} {prescription.doctor.last_name} (Code: {prescription.doctor.medical_code}) ({prescription.doctor.specialization or 'N/A'})
-#             </div>
-#         </div>
+        <div class="footer">
+            <p>Please present this PDF at the billing counter for payment.</p>
+            <p><strong>Thank you for choosing our pharmacy!</strong></p>
+        </div>
+    </body>
+    </html>
+    """
 
-#         <table>
-#             <thead>
-#                 <tr>
-#                     <th>Medicine Name</th>
-#                     <th>Dosage</th>
-#                     <th class="quantity-cell">Quantity</th>
-#                     <th>Description</th>
-#                 </tr>
-#             </thead>
-#             <tbody>
-#                 {table_rows}
-#             </tbody>
-#         </table>
+    # Generate PDF from HTML content using WeasyPrint
+    HTML(string=html_content).write_pdf(buffer)
 
-#         {notes_section_html}
+    # Get the value of the BytesIO buffer and set up the HTTP response.
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="prescription_{prescription.id}.pdf"'
+    return response
 
-#         <div class="footer">
-#             <p>Please present this PDF at the billing counter for payment.</p>
-#             <p><strong>Thank you for choosing our pharmacy!</strong></p>
-#         </div>
-#     </body>
-#     </html>
-#      """
-
-#     # Generate PDF from HTML content using WeasyPrint
-#     HTML(string=html_content).write_pdf(buffer)
-
-#     # Get the value of the BytesIO buffer and set up the HTTP response.
-#     buffer.seek(0)
-#     return HttpResponse(buffer, content_type='application/pdf')

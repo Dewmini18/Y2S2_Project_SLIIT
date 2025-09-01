@@ -1,129 +1,246 @@
 {% extends 'Medicine_inventory/base.html' %}
+{% load static %}
 {% block content %}
 <style>
-  /* Base styles using Tailwind's recommended 'font-sans' and a custom 'font-serif' */
-  body {
-    font-family: "Montserrat", sans-serif;
-    background-color: #f8fafc; /* slate-50 */
+  *, *::before, *::after {
+    font-family: "Montserrat", sans-serif !important;
   }
-  .font-serif {
-    font-family: "Montserrat", sans-serif;
+  
+  body {
+    background-color: #f8fafc;
   }
 </style>
 
-<h2 class="text-5xl font-bold text-slate-800 mb-6 mt-12 border-l-4 border-blue-600 pl-4">
-  Medicine Inventory Dashboard
-</h2>
+<div class="flex flex-col sm:flex-row justify-between items-center mb-8 mt-4 px-4 sm:px-12">
 
-<hr class="border-slate-300 mb-10">
+    <!-- Logo + Title -->
+    <div class="flex items-center gap-2 sm:gap-4 mb-4 sm:mb-0">
+        <img src="{% static 'MediSyn_Logo/1.png' %}" alt="Your Company Logo" class="h-12 w-auto sm:h-20">
+        <h2 class="text-2xl sm:text-4xl font-bold text-[#8D36EF]">
+            Inventory Dashboard
+        </h2>
+    </div>
 
-<div class="container mx-auto font-sans">
+    <!-- Middle Nav Buttons -->
+    <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mb-4 sm:mb-0">
+        <a href="{% url 'medicine_table' %}"
+          class="px-4 py-2 text-sm sm:text-base border border-cyan-600 text-cyan-600 font-medium rounded-md
+                  hover:bg-cyan-500 hover:text-white transition duration-300 ease-in-out text-center">
+            Medicinal Products
+        </a>
+        <a href="{% url 'non_medicine:product_list' %}"
+          class="px-4 py-2 text-sm sm:text-base border border-purple-600 text-purple-700 font-medium rounded-md
+                  hover:bg-purple-600 hover:text-white transition duration-300 ease-in-out text-center">
+            Non-Medical Products
+        </a>
+    </div>
 
-  <div class="flex justify-end mb-8">
-    <a href="{% url 'medicine_table' %}" class="px-5 py-2.5 border border-blue-600 text-blue-700 font-medium rounded-md hover:bg-blue-600 hover:text-white transition duration-300 ease-in-out">
-      View All Medicines
-    </a>
+    <!-- User Menu -->
+<div class="flex items-center gap-4 bg-white shadow-sm px-4 py-3 rounded-lg border border-gray-200">
+    {% if user.is_authenticated %}
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                {{ user.username|first|upper }}
+            </div>
+            <span class="text-sm sm:text-base text-gray-700 font-medium">
+                Welcome, <span class="font-semibold">{{ user.username }}</span>
+            </span>
+        </div>
+        <a href="{% url 'logout' %}"
+          class="px-4 py-2 text-sm font-medium rounded-md bg-red-500 text-white shadow-sm
+                  hover:bg-red-600 transition-colors duration-300 ease-in-out">
+            Logout
+        </a>
+    {% else %}
+        <a href="{% url 'login' %}"
+          class="px-4 py-2 text-sm font-medium rounded-md bg-green-600 text-white shadow-sm
+                  hover:bg-green-700 transition-colors duration-300 ease-in-out">
+            Login
+        </a>
+    {% endif %}
+</div>
+
+</div>
+
+
+
+<hr class="border-purple-500 mb-8 sm:mb-10">
+
+<div class="container mx-auto font-sans px-4 sm:px-6 lg:px-8">
+        <a class="px-4 py-2 text-l sm:px-5 sm:py-2.5 border border-cyan-600 text-cyan-600 font-medium rounded-md hover:bg-cyan-500 hover:text-white transition duration-300 ease-in-out text-center">
+            Medicinal Products
+        </a>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
+    <div class="bg-white border border-cyan-100 rounded-xl shadow p-4 sm:p-6 text-center hover:shadow-md transition">
+      <h5 class="text-sm sm:text-md font-medium text-cyan-600 mb-2">Total Medicines</h5>
+      <h3 class="text-2xl sm:text-3xl text-cyan-700 font-bold">{{ total_medicines }}</h3>
+    </div>
+    <div class="bg-white border border-red-100 rounded-xl shadow p-4 sm:p-6 text-center hover:shadow-md transition">
+      <h5 class="text-sm sm:text-md font-medium text-slate-600 mb-2">Low Stock</h5>
+      <h3 class="text-2xl sm:text-3xl text-red-600 font-bold">{{ low_stock_count }}</h3>
+    </div>
+    <div class="bg-white border border-yellow-100 rounded-xl shadow p-4 sm:p-6 text-center hover:shadow-md transition">
+      <h5 class="text-sm sm:text-md font-medium text-slate-600 mb-2">Near Expiry</h5>
+      <h3 class="text-2xl sm:text-3xl text-yellow-500 font-bold">{{ near_expiry_count }}</h3>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-xl shadow p-4 sm:p-6 text-center hover:shadow-md transition">
+      <h5 class="text-sm sm:text-md font-medium text-slate-600 mb-2">Expired</h5>
+      <h3 class="text-2xl sm:text-3xl text-slate-600 font-bold">{{ expired_count }}</h3>
+    </div>
+  </div>
+        <a class="px-4 py-2 text-l sm:px-5 sm:py-2.5 border border-purple-600 text-purple-700 font-medium rounded-md hover:bg-purple-600 hover:text-white transition duration-300 ease-in-out text-center">
+            Non-Medical Products
+        </a>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
+    <div class="bg-white border border-purple-100 rounded-xl shadow p-4 sm:p-6 text-center hover:shadow-md transition">
+      <h5 class="text-sm sm:text-md font-medium text-purple-600 mb-2">Total Products</h5>
+      <h3 class="text-2xl sm:text-3xl text-purple-700 font-bold">{{ total_nonmedical }}</h3>
+    </div>
+    <div class="bg-white border border-red-100 rounded-xl shadow p-4 sm:p-6 text-center hover:shadow-md transition">
+      <h5 class="text-sm sm:text-md font-medium text-slate-600 mb-2">Low Stock</h5>
+      <h3 class="text-2xl sm:text-3xl text-red-600 font-bold">{{ nonmedical_low_stock_count }}</h3>
+    </div>
+    <div class="bg-white border border-green-100 rounded-xl shadow p-4 sm:p-6 text-center hover:shadow-md transition">
+      <h5 class="text-sm sm:text-md font-medium text-slate-600 mb-2">Active Products</h5>
+      <h3 class="text-2xl sm:text-3xl text-green-600 font-bold">{{ nonmedical_active_count }}</h3>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-xl shadow p-4 sm:p-6 text-center hover:shadow-md transition">
+      <h5 class="text-sm sm:text-md font-medium text-slate-600 mb-2">Categories</h5>
+      <h3 class="text-2xl sm:text-3xl text-slate-600 font-bold">{{ nonmedical_categories_count }}</h3>
+    </div>
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-    <div class="bg-white border border-blue-100 rounded-xl shadow p-6 text-center hover:shadow-md transition">
-      <h5 class="text-md font-medium text-slate-600 mb-2">Total Medicines</h5>
-      <h3 class="text-3xl text-blue-700 font-bold">{{ total_medicines }}</h3>
-    </div>
-    <div class="bg-white border border-red-100 rounded-xl shadow p-6 text-center hover:shadow-md transition">
-      <h5 class="text-md font-medium text-slate-600 mb-2">Low Stock</h5>
-      <h3 class="text-3xl text-red-600 font-bold">{{ low_stock_count }}</h3>
-    </div>
-    <div class="bg-white border border-yellow-100 rounded-xl shadow p-6 text-center hover:shadow-md transition">
-      <h5 class="text-md font-medium text-slate-600 mb-2">Near Expiry</h5>
-      <h3 class="text-3xl text-yellow-500 font-bold">{{ near_expiry_count }}</h3>
-    </div>
-    <div class="bg-white border border-slate-200 rounded-xl shadow p-6 text-center hover:shadow-md transition">
-      <h5 class="text-md font-medium text-slate-600 mb-2">Expired</h5>
-      <h3 class="text-3xl text-slate-600 font-bold">{{ expired_count }}</h3>
-    </div>
-  </div>
-
-  <div class="max-w-4xl mx-auto mb-12">
-    <div class="bg-white shadow-lg rounded-xl p-8">
-      <h5 class="text-xl font-semibold text-slate-800 text-center mb-6">Medicines by Category</h5>
-      <div class="relative h-72">
-        <canvas id="categoryChart"></canvas>
+  <div class="max-w-full mx-auto mb-8 sm:mb-12">
+    <div class="bg-white shadow-lg rounded-xl p-4 sm:p-8">
+    <h2 class="text-xl sm:text-3xl font-bold text-slate-800">
+      Medicines by Category
+    </h2>
+    <br>
+      <div class="relative h-64 sm:h-72">
+        <canvas id="categoryChart1"></canvas>
       </div>
     </div>
   </div>
 
-  <div class="bg-white shadow-lg rounded-xl p-8 mb-12 overflow-x-auto">
-    <h5 class="text-xl font-semibold text-slate-800 mb-6">Recently Added Medicines</h5>
-    <table class="min-w-full text-sm text-left text-gray-700 border-collapse">
+  <div class="max-w-full mx-auto mb-8 sm:mb-12">
+    <div class="bg-white shadow-lg rounded-xl p-4 sm:p-8">
+    <h2 class="text-xl sm:text-3xl font-bold text-slate-800">
+      Non-Medicines by Category
+    </h2>
+    <br>
+      <div class="relative h-64 sm:h-72">
+        <canvas id="categoryChart2"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white shadow-lg rounded-xl p-4 sm:p-8 mb-8 sm:mb-12 overflow-x-auto">
+    <h5 class="text-lg sm:text-xl font-semibold text-slate-800 mb-4 sm:mb-6">Recently Added Medicines</h5>
+    <table class="min-w-full text-xs sm:text-sm text-left text-gray-700 border-collapse">
       <thead>
         <tr class="bg-gray-100 text-slate-700 uppercase text-xs tracking-wider border-b">
-          <th class="py-3 px-4">Name</th>
-          <th class="py-3 px-4">Brand</th>
-          <th class="py-3 px-4">Category</th>
-          <th class="py-3 px-4">Quantity</th>
-          <th class="py-3 px-4">Expiry Date</th>
-          <th class="py-3 px-4">Status</th>
+          <th class="py-2 px-2 sm:py-3 sm:px-4">Name</th>
+          <th class="py-2 px-2 sm:py-3 sm:px-4">Brand</th>
+          <th class="py-2 px-2 sm:py-3 sm:px-4 hidden sm:table-cell">Category</th>
+          <th class="py-2 px-2 sm:py-3 sm:px-4">Quantity</th>
+          <th class="py-2 px-2 sm:py-3 sm:px-4 hidden md:table-cell">Expiry Date</th>
+          <th class="py-2 px-2 sm:py-3 sm:px-4">Status</th>
         </tr>
       </thead>
       <tbody>
         {% for med in recent_medicines %}
         <tr class="border-b hover:bg-gray-50">
-          <td class="py-3 px-4">{{ med.name }}</td>
-          <td class="py-3 px-4">{{ med.brand }}</td>
-          <td class="py-3 px-4">{{ med.category }}</td>
-          <td class="py-3 px-4">{{ med.quantity_in_stock }}</td>
-          <td class="py-3 px-4">{{ med.expiry_date }}</td>
-          <td class="py-3 px-4">
+          <td class="py-2 px-2 sm:py-3 sm:px-4">{{ med.name }}</td>
+          <td class="py-2 px-2 sm:py-3 sm:px-4">{{ med.brand }}</td>
+          <td class="py-2 px-2 sm:py-3 sm:px-4 hidden sm:table-cell">{{ med.category }}</td>
+          <td class="py-2 px-2 sm:py-3 sm:px-4">{{ med.quantity_in_stock }}</td>
+          <td class="py-2 px-2 sm:py-3 sm:px-4 hidden md:table-cell">{{ med.expiry_date }}</td>
+          <td class="py-2 px-2 sm:py-3 sm:px-4">
             {% if med.is_expired %}
-              <span class="bg-slate-700 text-white text-xs px-3 py-1 rounded-full">Expired</span>
+              <span class="bg-slate-700 text-white text-xs px-5 py-2 rounded-full">Expired</span>
             {% elif med.is_near_expiry %}
-              <span class="bg-yellow-400 text-black text-xs px-3 py-1 rounded-full">Near Expiry</span>
+              <span class="bg-yellow-400 text-black text-xs px-5 py-2 rounded-full">Near Expiry</span>
             {% elif med.low_stock %}
-              <span class="bg-red-500 text-white text-xs px-3 py-1 rounded-full">Low Stock</span>
+              <span class="bg-red-500 text-white text-xs px-5 py-2 rounded-full">Low Stock</span>
             {% else %}
-              <span class="bg-green-500 text-white text-xs px-3 py-1 rounded-full">OK</span>
+              <span class="bg-cyan-500 text-white text-xs px-5 py-2 rounded-full">OK</span>
             {% endif %}
           </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="6" class="text-center text-gray-500 py-6">No recent medicines added.</td>
+          <td colspan="6" class="text-center text-gray-500 py-4 sm:py-6">No recent medicines added.</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 
-  <div class="max-w-4xl mx-auto mb-8">
-    <div class="bg-white shadow-lg rounded-xl p-8">
-      <h5 class="text-xl font-semibold text-slate-800 mb-6">Recently Performed Actions</h5>
-      <ul class="divide-y divide-gray-200">
-        {% for action in recent_actions %}
-        <li class="py-4 flex justify-between items-center">
-          <div>
-            <strong class="text-slate-700">
-              {% if action.medicine %}
-                {{ action.medicine.name }} ({{ action.medicine.batch_number }})
-              {% else %}
-                {{ action.medicine_name }} ({{ action.batch_number }})
-              {% endif %}
-            </strong>
-            <span class="ml-3 bg-blue-600 text-white text-xs px-2.5 py-1 rounded-full">{{ action.get_action_display }}</span>
-          </div>
-          <small class="text-gray-500 text-sm">{{ action.timestamp|date:"F j, Y, h:i A" }}</small>
-        </li>
-        {% empty %}
-        <li class="py-4 text-center text-gray-500 text-base">No recent actions recorded.</li>
+<div class="container mx-auto max-w-full px-4 py-4 sm:py-8">
+
+  <div class="mb-4 sm:mb-8">
+    <h2 class="text-xl sm:text-3xl font-bold text-slate-800">
+      Medicine Inventory Action Log
+    </h2>
+    <p class="mt-1 text-xs sm:text-sm text-slate-500">A log of all recent additions, updates, and deletions in the inventory.</p>
+  </div>
+
+  <div class="bg-white shadow-lg rounded-xl p-4 sm:p-6 sm:p-8">
+    <ul class="divide-y divide-gray-200">
+      {% for action in recent_actions %}
+      <li class="py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 hover:bg-slate-50 -mx-4 sm:-mx-6 px-4 sm:px-6">
+        <div class="flex-grow">
+          <strong class="text-sm sm:text-base text-slate-800 font-semibold">
+            {% if action.medicine %}
+              {{ action.medicine.name }}
+            {% else %}
+              {{ action.medicine_name }}
+            {% endif %}
+          </strong>
+          <span class="block text-xs text-slate-500">Batch: {% if action.medicine %}{{ action.medicine.batch_number }}{% else %}{{ action.batch_number }}{% endif %}</span>
+        </div>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 mt-2 sm:mt-0">
+          <span class="text-[10px] sm:text-xs font-semibold text-blue-900 bg-blue-100 border border-blue-200 px-3 sm:px-2 py-1 rounded-full w-full sm:w-auto text-center">By: {{ action.user.username }}</span>
+          <span class="text-[10px] sm:text-xs font-semibold text-cyan-900 bg-cyan-100 border border-cyan-200 px-3 sm:px-3 py-1 rounded-full w-full sm:w-auto text-center">{{ action.get_action_display }}</span>
+          <small class="text-gray-500 text-xs sm:text-sm whitespace-nowrap">{{ action.timestamp|date:"F j, Y, h:i A" }}</small>
+        </div>
+      </li>
+      {% empty %}
+      <li class="py-4 sm:py-6 text-center text-gray-500 text-sm sm:text-base">No recent actions have been recorded.</li>
+      {% endfor %}
+    </ul>
+
+    <div class="mt-4 sm:mt-6 flex justify-center">
+      <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+        {% if recent_actions.has_previous %}
+          <a href="?page={{ recent_actions.previous_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+            <span class="sr-only">Previous</span>
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+          </a>
+        {% endif %}
+
+        {% for num in recent_actions.paginator.page_range %}
+          {% if recent_actions.number == num %}
+            <span aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">{{ num }}</span>
+          {% elif num > recent_actions.number|add:'-3' and num < recent_actions.number|add:'3' %}
+            <a href="?page={{ num }}" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">{{ num }}</a>
+          {% endif %}
         {% endfor %}
-      </ul>
+
+        {% if recent_actions.has_next %}
+          <a href="?page={{ recent_actions.next_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+            <span class="sr-only">Next</span>
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+          </a>
+        {% endif %}
+      </nav>
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const ctx = document.getElementById('categoryChart').getContext('2d');
+  const ctx = document.getElementById('categoryChart1').getContext('2d');
   const categoryChart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -131,10 +248,43 @@
       datasets: [{
         label: 'Medicine Count',
         data: {{ category_counts|safe }},
-        backgroundColor: 'rgba(30, 64, 175, 0.6)',
-        borderColor: 'rgba(30, 64, 175, 1)',
+        backgroundColor: 'rgba(45, 199, 198, 1)',
+        borderColor: 'rgba(45, 199, 198, 1)',
         borderWidth: 1,
-        borderRadius: 6
+        borderRadius: 10
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
+        }
+      }
+    }
+  });
+
+  const ctx2 = document.getElementById('categoryChart2').getContext('2d');
+  const nonmedCategoryChart = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: {{ nonmed_category_labels|safe }},
+      datasets: [{
+        label: 'Non-Medicine Count',
+        data: {{ nonmed_category_counts|safe }},
+        backgroundColor: 'rgba(139, 92, 246, 1)', // Purple for non-medicine
+        borderColor: 'rgba(139, 92, 246, 1)',
+        borderWidth: 1,
+        borderRadius: 10
       }]
     },
     options: {

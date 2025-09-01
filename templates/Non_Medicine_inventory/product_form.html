@@ -1,0 +1,268 @@
+{% extends 'Medicine_inventory/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="min-h-[calc(100vh-6rem)] bg-gray-50">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Top bar -->
+    <div class="mb-6 flex items-center justify-between">
+      <a href="{% url 'non_medicine:product_list' %}"
+        class="inline-flex items-center text-sm font-medium text-gray-600 hover:text-blue-700">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Back to Products
+      </a>
+      <span class="hidden md:inline text-xs text-gray-500">Inventory › Non-Medicine › {{ title }}</span>
+    </div>
+
+    <!-- Card -->
+    <div class="rounded-lg border border-gray-200 bg-white shadow-sm">
+      <div class="p-6 sm:p-8">
+        <h1 class="text-2xl font-semibold text-gray-800">
+          {{ title }}
+        </h1>
+        <p class="mt-1 text-sm text-gray-500">Add or update a non-medicine product. Fields marked
+          <span class="text-red-600">*</span> are required.</p>
+
+        <form method="post" enctype="multipart/form-data" class="mt-8 space-y-6">
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+          <div class="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {{ form.non_field_errors }}
+          </div>
+          {% endif %}
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+
+            <!-- Brand -->
+            <div class="md:col-span-2">
+              <label for="{{ form.brand.id_for_label }}" class="mb-1 block text-sm font-medium text-gray-700">
+                Product Brand <span class="text-red-600">*</span>
+              </label>
+              {% render_field form.brand class+="block w-full rounded-md border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-100 text-sm" %}
+              {% if form.brand.errors %}
+              <p class="mt-1 text-xs text-red-600">{{ form.brand.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Name -->
+            <div class="md:col-span-2">
+              <label for="{{ form.name.id_for_label }}" class="mb-1 block text-sm font-medium text-gray-700">
+                Product Name <span class="text-red-600">*</span>
+              </label>
+              {% render_field form.name class+="block w-full rounded-md border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-100 text-sm" placeholder="e.g., Surgical Gloves Medium" %}
+              {% if form.name.errors %}
+              <p class="mt-1 text-xs text-red-600">{{ form.name.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Slug -->
+            <div class="md:col-span-2">
+              <div class="flex items-center justify-between">
+                <label for="{{ form.slug.id_for_label }}" class="mb-1 block text-sm font-medium text-gray-700">
+                  Slug <span class="text-red-600">*</span>
+                </label>
+                <button type="button" id="auto-slug"
+                  class="text-xs text-blue-600 hover:underline">Auto-generate</button>
+              </div>
+              {% render_field form.slug class+="block w-full rounded-md border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-100 text-sm" placeholder="auto-generated-from-name" %}
+              {% if form.slug.errors %}
+              <p class="mt-1 text-xs text-red-600">{{ form.slug.errors.0 }}</p>
+              {% else %}
+              <p class="mt-1 text-xs text-gray-400">Lowercase, letters, numbers, and hyphens only.</p>
+              {% endif %}
+            </div>
+
+            <!-- Category -->
+            <div>
+              <label for="{{ form.category.id_for_label }}" class="mb-1 block text-sm font-medium text-gray-700">
+                Category <span class="text-red-600">*</span>
+              </label>
+              {% render_field form.category class+="block w-full rounded-md border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-100 text-sm" %}
+              {% if form.category.errors %}
+              <p class="mt-1 text-xs text-red-600">{{ form.category.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Active -->
+            <div>
+              <label for="{{ form.is_active.id_for_label }}" class="mb-1 block text-sm font-medium text-gray-700">
+                Active
+              </label>
+              <div class="mt-1">
+                {% render_field form.is_active class+="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" %}
+              </div>
+              {% if form.is_active.errors %}
+              <p class="mt-1 text-xs text-red-600">{{ form.is_active.errors.0 }}</p>
+              {% else %}
+              <p class="mt-1 text-xs text-gray-400">Inactive products won’t appear in inventory lists.</p>
+              {% endif %}
+            </div>
+
+            <!-- Cost Price -->
+            <div>
+              <label for="{{ form.cost_price.id_for_label }}" class="mb-1 block text-sm font-medium text-gray-700">
+                Cost Price <span class="text-red-600">*</span>
+              </label>
+              <div class="relative">
+                <span class="absolute left-3 top-2.5 text-xs text-gray-500">LKR</span>
+                {% render_field form.cost_price class+="pl-10 block w-full rounded-md border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-100 text-sm" placeholder="0.00" %}
+              </div>
+              {% if form.cost_price.errors %}
+              <p class="mt-1 text-xs text-red-600">{{ form.cost_price.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Selling Price -->
+            <div>
+              <label for="{{ form.selling_price.id_for_label }}" class="mb-1 block text-sm font-medium text-gray-700">
+                Selling Price <span class="text-red-600">*</span>
+              </label>
+              <div class="relative">
+                <span class="absolute left-3 top-2.5 text-xs text-gray-500">LKR</span>
+                {% render_field form.selling_price class+="pl-10 block w-full rounded-md border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-100 text-sm" placeholder="0.00" %}
+              </div>
+              {% if form.selling_price.errors %}
+              <p class="mt-1 text-xs text-red-600">{{ form.selling_price.errors.0 }}</p>
+              {% endif %}
+              <p id="marginHint" class="mt-1 text-xs text-gray-500"></p>
+            </div>
+
+            <!-- Stock -->
+            <div>
+              <label for="{{ form.stock.id_for_label }}" class="mb-1 block text-sm font-medium text-gray-700">
+                Stock <span class="text-red-600">*</span>
+              </label>
+              {% render_field form.stock class+="block w-full rounded-md border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-100 text-sm" placeholder="Quantity in units" %}
+              {% if form.stock.errors %}
+              <p class="mt-1 text-xs text-red-600">{{ form.stock.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Reorder Level -->
+            <div>
+              <label for="{{ form.reorder_level.id_for_label }}" class="mb-1 block text-sm font-medium text-gray-700">
+                Reorder Level <span class="text-red-600">*</span>
+              </label>
+              {% render_field form.reorder_level class+="block w-full rounded-md border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-100 text-sm" placeholder="Trigger quantity" %}
+              {% if form.reorder_level.errors %}
+              <p class="mt-1 text-xs text-red-600">{{ form.reorder_level.errors.0 }}</p>
+              {% else %}
+              <p class="mt-1 text-xs text-gray-400">Alerts when stock falls below this level.</p>
+              {% endif %}
+            </div>
+
+            <!-- Image -->
+            <div class="md:col-span-2">
+              <label for="{{ form.image.id_for_label }}" class="mb-1 block text-sm font-medium text-gray-700">
+                Product Image
+              </label>
+              <div class="rounded-md border border-gray-300 p-3 bg-gray-50">
+                {% render_field form.image class+="block w-full text-sm text-gray-700 file:mr-4 file:rounded file:border-0 file:bg-blue-600 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white hover:file:bg-blue-700" %}
+                <p class="mt-2 text-xs text-gray-400">Optional. Recommended size: 800×600px.</p>
+                <img id="preview" class="mt-3 hidden h-28 w-28 rounded-md object-cover border border-gray-200"
+                  alt="preview">
+              </div>
+              {% if form.image.errors %}
+              <p class="mt-1 text-xs text-red-600">{{ form.image.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Description -->
+            <div class="md:col-span-2">
+              <label for="{{ form.description.id_for_label }}" class="mb-1 block text-sm font-medium text-gray-700">
+                Description
+              </label>
+              {% render_field form.description rows="5" class+="block w-full rounded-md border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-100 text-sm" placeholder="Optional details, specs, notes…" %}
+              {% if form.description.errors %}
+              <p class="mt-1 text-xs text-red-600">{{ form.description.errors.0 }}</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="mt-8 border-t border-gray-200 pt-6 flex flex-col sm:flex-row justify-end gap-3">
+            <a href="{% url 'non_medicine:product_list' %}"
+              class="inline-flex items-center justify-center rounded-md border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+              Cancel
+            </a>
+            <button type="submit"
+              class="inline-flex items-center justify-center rounded-md bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              Save Product
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts unchanged -->
+<script>
+  // Auto-generate slug
+  (function () {
+    const nameEl = document.getElementById('{{ form.name.id_for_label }}');
+    const brandEl = document.getElementById('{{ form.brand.id_for_label }}');
+    const slugEl = document.getElementById('{{ form.slug.id_for_label }}');
+    const autoBtn = document.getElementById('auto-slug');
+    function slugify(text) {
+      return text.toString().trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/--+/g, '-').replace(/^-+|-+$/g, '');
+    }
+    if (autoBtn && slugEl) {
+      autoBtn.addEventListener('click', () => {
+        const combo = [(brandEl?.value || ''), (nameEl?.value || '')].filter(Boolean).join(' ');
+        if (combo) slugEl.value = slugify(combo);
+      });
+    }
+  })();
+
+  // Margin hint
+  (function () {
+    const cost = document.getElementById('{{ form.cost_price.id_for_label }}');
+    const sell = document.getElementById('{{ form.selling_price.id_for_label }}');
+    const hint = document.getElementById('marginHint');
+    function update() {
+      const c = parseFloat(cost?.value || 0);
+      const s = parseFloat(sell?.value || 0);
+      if (!hint) return;
+      if (!isFinite(c) || !isFinite(s) || (c === 0 && s === 0)) {
+        hint.textContent = '';
+        return;
+      }
+      const margin = s - c;
+      const pct = c > 0 ? (margin / c) * 100 : 0;
+      const formatted = new Intl.NumberFormat('en-LK', { style: 'currency', currency: 'LKR', maximumFractionDigits: 2 }).format(margin);
+      hint.textContent = `Estimated margin: ${formatted} (${pct.toFixed(1)}%)`;
+    }
+    ['input', 'change'].forEach(evt => {
+      cost?.addEventListener(evt, update);
+      sell?.addEventListener(evt, update);
+    });
+    update();
+  })();
+
+  // Image preview
+  (function () {
+    const input = document.getElementById('{{ form.image.id_for_label }}');
+    const preview = document.getElementById('preview');
+    if (input && preview) {
+      input.addEventListener('change', (e) => {
+        const [file] = e.target.files || [];
+        if (file) {
+          preview.src = URL.createObjectURL(file);
+          preview.classList.remove('hidden');
+        } else {
+          preview.src = '';
+          preview.classList.add('hidden');
+        }
+      });
+    }
+  })();
+</script>
+{% endblock %}

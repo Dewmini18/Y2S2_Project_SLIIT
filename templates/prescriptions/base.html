@@ -7,6 +7,7 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -126,6 +127,7 @@
             <a href="{% url 'prescription_list' %}" class="text-xl font-bold">Pharmacy Rx</a>
             <div>
                 <a href="{% url 'prescription_list' %}" class="hover:text-gray-400">Prescriptions</a>
+                <a href="{% url 'payment_list' %}" class="hover:text-gray-400">Payments</a>
                 <a href="{% url 'patient_list' %}" class="hover:text-gray-400">Patients</a>
                 <a href="{% url 'doctor_list' %}" class="hover:text-gray-400">Doctors</a>
                 <a href="{% url 'medicine_table' %}" class="hover:text-gray-400">Inventory</a> {# Link to your group member's app #}

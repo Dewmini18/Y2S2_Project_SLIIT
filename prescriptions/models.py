@@ -1,8 +1,6 @@
 # prescriptions/models.py
 from django.db import models
 from django.urls import reverse
-# Import the Medicine model from the Medicine_Inventory app
-# Ensure 'Medicine_Inventory' is correctly added to INSTALLED_APPS in crudDemo/settings.py
 from Medicine_inventory.models import Medicine
 from datetime import date
 
@@ -14,7 +12,8 @@ class Patient(models.Model):
     date_of_birth = models.DateField()
     contact_number = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
-
+    email = models.EmailField(blank=True, null=True) 
+    
     class Meta:
         # Orders patients by their last name, then first name, for consistent listing.
         ordering = ['last_name', 'first_name']
@@ -58,6 +57,8 @@ class Prescription(models.Model):
     # Field to store potential interaction warnings from the Deep Learning model.
     # This will be populated if drug interactions are detected.
     interaction_warning = models.TextField(blank=True, null=True)
+    # New field to track if the prescription has been paid for.
+    is_paid = models.BooleanField(default=False)
 
     class Meta:
         # Orders prescriptions by date in descending order (most recent first).
@@ -71,6 +72,15 @@ class Prescription(models.Model):
         # Returns the URL to access a particular instance of the Prescription.
         # This is useful for redirects after creating/updating an object.
         return reverse('prescription_detail', kwargs={'pk': self.pk})
+
+    @property
+    def total_cost(self):
+        """
+        Calculates the total cost of the prescription by summing up the total
+        price of each associated PrescriptionItem.
+        """
+        return sum(item.total_price for item in self.items.all())
+
 
 # Model for individual medicine items within a prescription.
 # This links a specific medicine (batch) from the inventory to a prescription.
@@ -91,6 +101,7 @@ class PrescriptionItem(models.Model):
     # This is the quantity that will affect the inventory.
     dispensed_quantity = models.PositiveIntegerField(default=0)
 
+
     class Meta:
         # Ensures that a specific medicine (batch) can only be added once to a given prescription.
         # This prevents duplicate entries for the same medicine within the same prescription.
@@ -99,6 +110,16 @@ class PrescriptionItem(models.Model):
     def __str__(self):
         # String representation of the PrescriptionItem object.
         return f"{self.medicine.name} ({self.dispensed_quantity} units) for Prescription #{self.prescription.id}"
+
+    @property
+    def price_per_unit(self):
+        """Gets the selling price of the medicine from the linked Medicine model."""
+        return self.medicine.selling_price
+
+    @property
+    def total_price(self):
+        """Calculates the total price for this item based on dispensed quantity and selling price."""
+        return self.dispensed_quantity * self.price_per_unit
 
 # Model for storing known drug interactions.
 # This table will be populated and used by the Deep Learning model (Option A).
@@ -123,4 +144,3 @@ class DrugInteraction(models.Model):
     def __str__(self):
         # String representation of the DrugInteraction object.
         return f"Interaction: {self.drug1_name} + {self.drug2_name} ({self.severity})"
-

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
+
+</head>
+<body>
+ 
+        <!-- <h1 class="text-3xl font-bold text-blue-600">Hello from base!</h1>
+            <button class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" 
+                    onclick="alert('Button clicked!')">
+                Click me
+            </button> -->
+            
+        <!-- <nav class="z-50 bg-black backdrop-blur-md flex items-center justify-between px-4 sm:px-6 text-white  mx-4 my-3 relative">
+            
+            <div class="container mx-auto">
+                <div class="flex justify-between items-center">
+                    <a href="{% url 'onlineStore:homepage' %}" >
+                        <img src="../media/non_medical_products/5.png" alt="MedsiSync logo" class="h-20 w-60">
+                    </a>
+                    <div class="container mx-auto ml-10">
+                        <ul class="flex space-x-4">
+                            <li><a href="{% url 'onlineStore:homepage' %}" class="text-white hover:text-gray-300">Home</a></li>
+                            <li><a href="{% url 'onlineStore:products' %}" class="text-white hover:text-gray-300">Products</a></li>
+                            <li><a href="" class="text-white hover:text-gray-300">About Us</a></li>
+                        </ul>
+                    </div>
+                    <form action="" method="get" class="flex items-center">
+                        <input type="text" name="query" placeholder="Search products..."
+                            class="border border-gray-300 rounded-l p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button type="submit" class="bg-blue-500 text-white p-2 rounded-r hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            Search
+                        </button>
+                    </form>
+                    <div class="flex items-center">
+                        <a href="" class="text-white hover:text-gray-300 mr-4">Cart</a>
+                        <a href="" class="text-white hover:text-gray-300">Wishlist</a>
+                    </div>
+                </div>
+                
+            </div>
+        </nav> -->
+
+        <header class="absolute inset-x-0 top-0 z-50">
+            <nav aria-label="Global" class="flex items-center justify-between p-6 lg:px-8">
+            <div class="flex lg:flex-1">
+                <a href="#" class="-m-1.5 p-1.5">
+                <span class="sr-only">MediSync</span>
+                <img src="./5.png" alt="" class="h-8 w-auto" />
+                </a>
+            </div>
+            <div class="flex lg:hidden">
+                <button type="button" command="show-modal" commandfor="mobile-menu" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
+                <span class="sr-only">Open main menu</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6">
+                    <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                </button>
+            </div>
+            <div class="hidden lg:flex lg:gap-x-12">
+                <a href="/online-store/" class="text-sm/6 font-semibold text-gray-900">Home</a>
+                <a href="{% url 'onlineStore:products' %}" class="text-sm/6 font-semibold text-gray-900">Product</a>
+                <a href="#" class="text-sm/6 font-semibold text-gray-900">Contact us</a>
+                <a href="#" class="text-sm/6 font-semibold text-gray-900">About us</a>
+            </div>
+            <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+                <a href="#" class="text-sm/6 font-semibold text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
+            </div>
+            </nav>
+            <el-dialog>
+            <dialog id="mobile-menu" class="backdrop:bg-transparent lg:hidden">
+                <div tabindex="0" class="fixed inset-0 focus:outline-none">
+                <el-dialog-panel class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+                    <div class="flex items-center justify-between">
+                    <a href="#" class="-m-1.5 p-1.5">
+                        <span class="sr-only">Your Company</span>
+                        <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="" class="h-8 w-auto" />
+                    </a>
+                    <button type="button" command="close" commandfor="mobile-menu" class="-m-2.5 rounded-md p-2.5 text-gray-700">
+                        <span class="sr-only">Close menu</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6">
+                        <path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    </div>
+                    <div class="mt-6 flow-root">
+                    <div class="-my-6 divide-y divide-gray-500/10">
+                        <div class="space-y-2 py-6">
+                        <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Product</a>
+                        <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Features</a>
+                        <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Marketplace</a>
+                        <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Company</a>
+                        </div>
+                        <div class="py-6">
+                                <!-- Show greeting and logout link if user is logged in -->
+                            
+                        </div>
+
+                    </div>
+                    </div>
+                </el-dialog-panel>
+                </div>
+            </dialog>
+            </el-dialog>
+        </header>
+        <div class="">
+            
+            {% block content %}
+            <!-- Content will be injected here -->
+            {% endblock %}
+        </div>
+    
+</body>
+</html>

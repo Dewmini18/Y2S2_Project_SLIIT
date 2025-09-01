@@ -5,38 +5,40 @@
 
 {% block content %}
 <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-    <div class="flex justify-between items-center mb-6">
+    <!-- Header with action buttons -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0">
         <h1 class="text-2xl font-bold text-gray-800">Prescription #{{ prescription.id }} Details</h1>
-        <div class="flex space-x-4">
-            <a href="{% url 'prescription_update' prescription.pk %}" class="btn-primary">
+        <div class="flex flex-wrap gap-2 md:space-x-4">
+            <a href="{% url 'prescription_update' prescription.pk %}" class="btn-primary flex items-center">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 Edit Prescription
             </a>
-            <a href="{% url 'generate_prescription_pdf' prescription.pk %}" class="btn-primary" target="_blank">
+            <a href="{% url 'generate_prescription_pdf' prescription.pk %}" class="btn-primary flex items-center" target="_blank">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v4m-6 5a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H9a2 2 0 00-2 2v2z"></path></svg>
                 Generate PDF
             </a>
-            <a href="{% url 'prescription_delete' prescription.pk %}" class="btn-danger">
+            <a href="{% url 'prescription_delete' prescription.pk %}" class="btn-danger flex items-center">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                 Delete Prescription
             </a>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 mb-6">
-        <div class="p-4 bg-gray-50 rounded-md">
+    <!-- Prescription Details Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-gray-700 mb-6">
+        <div class="p-4 bg-gray-50 rounded-md shadow-sm">
             <p class="font-semibold text-gray-800">Prescription Date:</p>
             <p>{{ prescription.prescription_date|date:"F d, Y" }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-md">
+        <div class="p-4 bg-gray-50 rounded-md shadow-sm">
             <p class="font-semibold text-gray-800">Patient:</p>
             <p><a href="{% url 'patient_detail' prescription.patient.pk %}" class="text-blue-600 hover:underline">{{ prescription.patient.first_name }} {{ prescription.patient.last_name }}</a></p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-md">
+        <div class="p-4 bg-gray-50 rounded-md shadow-sm">
             <p class="font-semibold text-gray-800">Doctor:</p>
             <p><a href="{% url 'doctor_detail' prescription.doctor.pk %}" class="text-blue-600 hover:underline">Dr. {{ prescription.doctor.first_name }} {{ prescription.doctor.last_name }} (Code: {{ prescription.doctor.medical_code }})</a></p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-md">
+        <div class="p-4 bg-gray-50 rounded-md shadow-sm">
             <p class="font-semibold text-gray-800">Validation Status:</p>
             <p>
                 {% if prescription.is_validated %}
@@ -46,31 +48,42 @@
                 {% endif %}
             </p>
         </div>
-        <div class="md:col-span-2 p-4 bg-gray-50 rounded-md">
-            <p class="font-semibold text-gray-800">Interaction Warning:</p>
-            <p class="{% if prescription.interaction_warning %}text-red-600 font-semibold{% else %}text-gray-700{% endif %}">
-                {{ prescription.interaction_warning|default:"No significant interactions detected." }}
-            </p>
+        
+        <!-- Enhanced Interaction Warning Display -->
+        {% if prescription.interaction_warning %}
+        <div class="md:col-span-2 lg:col-span-3 p-4 rounded-md shadow-sm bg-red-100 border border-red-400 text-red-700">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <p class="font-semibold">Interaction Warning:</p>
+            </div>
+            <p class="mt-2">{{ prescription.interaction_warning }}</p>
         </div>
-        <div class="md:col-span-2 p-4 bg-gray-50 rounded-md">
+        {% else %}
+        <div class="md:col-span-2 lg:col-span-3 p-4 bg-gray-50 rounded-md shadow-sm">
+            <p class="font-semibold text-gray-800">Interaction Warning:</p>
+            <p>No significant interactions detected.</p>
+        </div>
+        {% endif %}
+        
+        <div class="md:col-span-2 lg:col-span-3 p-4 bg-gray-50 rounded-md shadow-sm">
             <p class="font-semibold text-gray-800">Notes:</p>
             <p>{{ prescription.notes|default:"No additional notes." }}</p>
         </div>
     </div>
 
+    <!-- Prescription Items Table -->
     <h2 class="text-xl font-bold text-gray-800 mb-4 mt-8">Prescription Items</h2>
-
     {% if prescription_items %}
     <div class="overflow-x-auto mb-6">
-        <table class="table-auto min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+        <table class="table-auto min-w-full divide-y divide-gray-200 rounded-md overflow-hidden shadow-sm">
+            <thead class="bg-gray-200">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Medicine (Batch)</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dosage</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requested Qty</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dispensed Qty</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Medicine (Batch)</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Dosage</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Duration</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Requested Qty</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Dispensed Qty</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -91,9 +104,10 @@
         </table>
     </div>
     {% else %}
-    <p class="text-gray-600 mb-6">No medicines added to this prescription yet.</p>
+    <p class="text-gray-600 mb-6">No medicines have been added to this prescription yet.</p>
     {% endif %}
 
+    <!-- Add Medicine to Prescription Form -->
     <h2 class="text-xl font-bold text-gray-800 mb-4 mt-8">Add Medicine to Prescription</h2>
     <form id="add-item-form" method="post" action="{% url 'add_prescription_item' prescription.pk %}" class="space-y-4">
         {% csrf_token %}
@@ -151,26 +165,31 @@
         </div>
     </form>
 
-    <div class="mt-8 flex justify-end">
+    <!-- Navigation and Checkout buttons -->
+    <div class="mt-8 flex justify-between items-center">
         <a href="{% url 'prescription_list' %}" class="btn-secondary px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150 ease-in-out">
             Back to Prescriptions List
         </a>
+        <a href="{% url 'checkout_prescription' pk=prescription.pk %}" class="btn-primary">
+            Complete Prescription & Pay
+        </a>
     </div>
+
 </div>
 
 <!-- Stock Confirmation Modal -->
 <div id="stockConfirmationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div class="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">Insufficient Stock</h3>
-        <p class="text-gray-700 mb-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">Insufficient Stock</h3>
+        <p class="text-gray-700 text-center mb-6">
             <span class="font-semibold" id="modalMedicineName"></span> (Batch: <span class="font-semibold" id="modalMedicineBatch"></span>):
             You requested <span class="font-semibold" id="modalRequestedQty"></span> units, but only <span class="font-semibold" id="modalAvailableQty"></span> units are available.
         </p>
-        <p class="text-gray-700 mb-6">
+        <p class="text-gray-700 text-center mb-6">
             Do you agree to dispense the available quantity (<span class="font-semibold" id="modalConfirmQty"></span> units)?
         </p>
 
-        <div class="flex justify-end space-x-4">
+        <div class="flex justify-center space-x-4">
             <button id="cancelDispenseBtn" class="btn-secondary px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition duration-150 ease-in-out">
                 No, Cancel
             </button>
@@ -197,7 +216,7 @@
         const formData = {{ form_data|safe }}; // This will be a JS object of the form data
 
         if (confirmNeeded) {
-            // Populate modal content
+            // Populate modal content with data from the Django view
             document.getElementById('modalMedicineName').textContent = medicineName;
             document.getElementById('modalMedicineBatch').textContent = medicineBatch;
             document.getElementById('modalRequestedQty').textContent = requestedQuantityInitial;
@@ -209,15 +228,15 @@
         }
 
         confirmDispenseBtn.addEventListener('click', function() {
-            // Add a hidden input to the form to signal confirmation
+            // This is crucial. We add a hidden input to signal to the Django view that the user has confirmed the reduced quantity.
             const hiddenInput = document.createElement('input');
             hiddenInput.type = 'hidden';
             hiddenInput.name = 'confirm_dispense';
             hiddenInput.value = 'true';
             addItemForm.appendChild(hiddenInput);
 
-            // Re-populate original form fields from session data if needed (for safety, though Django form should handle it)
-            // This loop ensures all original fields (medicine, dosage, duration, requested_quantity) are resent
+            // Re-populate original form fields from session data
+            // This loop ensures all original fields (medicine, dosage, duration, requested_quantity) are resent with the confirmation flag.
             for (const key in formData) {
                 if (formData.hasOwnProperty(key) && key !== 'csrfmiddlewaretoken') {
                     const input = document.createElement('input');
@@ -233,12 +252,8 @@
         });
 
         cancelDispenseBtn.addEventListener('click', function() {
-            // Hide the modal
+            // Hide the modal when the user cancels.
             modal.classList.add('hidden');
-            // Optionally, clear any messages related to the stock warning
-            // This is handled by Django's message system on page reload, but if you want to clear it client-side:
-            // const messagesContainer = document.querySelector('.messages');
-            // if (messagesContainer) { messagesContainer.innerHTML = ''; }
         });
 
         // Optional: Close modal if clicking outside (simple version)

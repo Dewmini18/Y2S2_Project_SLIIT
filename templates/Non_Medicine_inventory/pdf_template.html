@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        /* ========= THEME ========= */
+        :root{
+            --purple: #6b21a8;            /* primary */
+            --purple-50:#f5f3ff;
+            --text:#333333;
+            --muted:#6b7280;
+            --border:#e5e7eb;
+            --danger:#dc2626;
+            --bg:#f9fafb;
+        }
+
+        /* ========= PAGE ========= */
+        @page {
+            size: A4 portrait;
+            margin: 2.5cm;
+            /* Optional running footer (page numbers) */
+            @bottom-center { content: element(pageFooter); }
+        }
+        /* Ensure table headers repeat on page breaks in most PDF renderers */
+        thead { display: table-header-group; }
+        tfoot { display: table-footer-group; }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.6;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* ========= HEADER ========= */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 160px;
+        }
+        .logo {
+            display: block;
+            max-height: 60px;         /* controls logo height */
+            max-width: 220px;         /* prevents oversized logos */
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+        .brand-placeholder {
+            color: var(--purple);
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+        }
+        .report-meta {
+            text-align: right;
+            flex: 1 1 auto;
+        }
+        .title {
+            color: var(--purple);
+            font-size: 26px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+            line-height: 1.25;
+        }
+        .date {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+        .header-rule {
+            height: 3px;
+            background: var(--purple);
+            border-radius: 2px;
+            margin: 12px 0 22px 0;
+            width: 100%;
+        }
+
+        /* ========= TABLE ========= */
+        .table-wrap {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden; /* keeps rounded corners */
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        thead th {
+            background: var(--purple);
+            color: #fff;
+            text-align: left;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            padding: 12px 10px;
+            border-right: 1px solid rgba(255,255,255,0.14);
+            white-space: nowrap;
+        }
+        thead th:last-child { border-right: none; }
+
+        tbody td {
+            padding: 11px 10px;
+            border-top: 1px solid var(--border);
+            vertical-align: top;
+            word-break: break-word;
+        }
+        tbody tr:nth-child(even) td { background: #fcfcff; } /* subtle tint */
+        tbody tr:hover td { background: var(--purple-50); transition: background .25s ease; }
+
+        /* Alignment & emphasis */
+        .num { text-align: right; white-space: nowrap; }
+        .low-stock { color: var(--danger); font-weight: 700; }
+        .status {
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 999px;
+            display: inline-block;
+            font-size: 12px;
+            border: 1px solid #ddd6fe;
+        }
+        .status.active { background: #ede9fe; color: var(--purple); }
+        .status.inactive { background: #f3f4f6; color: #6b7280; border-color: #e5e7eb; }
+        .row-inactive td { color: #6b7280; background: #fafafa; }
+
+        /* ========= VISIBLE FOOTER ========= */
+        .footer {
+            margin-top: 22px;
+            padding-top: 10px;
+            border-top: 2px solid var(--purple);
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: 0.3px;
+        }
+
+        /* ========= RUNNING PAGE FOOTER (page numbers) ========= */
+        .page-footer { position: running(pageFooter); }
+        .page-number:after { content: "Page " counter(page) " of " counter(pages); }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="brand">
+            {% if logo_data %}
+                <img src="data:image/png;base64,{{ logo_data }}" alt="Pharmacy Logo" class="logo">
+            {% else %}
+                <div class="brand-placeholder">Your Company</div>
+            {% endif %}
+        </div>
+        <div class="report-meta">
+            <h1 class="title">{{ title }}</h1>
+            <div class="date">Report generated on {{ date }}</div>
+        </div>
+    </header>
+    <div class="header-rule"></div>
+
+    <!-- Table -->
+    <section class="table-wrap">
+        <table role="table" aria-label="Product Inventory">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Brand</th>
+                    <th scope="col">Category</th>
+                    <th scope="col" class="num">Price (Rs)</th>
+                    <th scope="col" class="num">Stock</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr class="{% if not product.is_active %}row-inactive{% endif %}">
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.brand }}</td>
+                    <td>{{ product.get_category_display }}</td>
+                    <td class="num">{{ product.selling_price|floatformat:2 }}</td>
+                    <td class="num {% if product.stock <= product.reorder_level %}low-stock{% endif %}">
+                        {{ product.stock }}{% if product.stock <= product.reorder_level %} (Low){% endif %}
+                    </td>
+                    <td>
+                        <span class="status {% if product.is_active %}active{% else %}inactive{% endif %}">
+                            {% if product.is_active %}Active{% else %}Inactive{% endif %}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Visible footer -->
+    <footer class="footer">
+        Report generated on {{ date }} • Confidential • For internal use only
+    </footer>
+
+    <!-- Paged-media footer (page numbers) -->
+    <div class="page-footer">
+        <div class="page-number" style="text-align:center; color:#9ca3af; font-size:11px; margin-top:6px;"></div>
+    </div>
+
+</body>
+</html>

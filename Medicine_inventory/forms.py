@@ -18,7 +18,22 @@ class MedicineForm(forms.ModelForm):
         widgets = {
             'manufacture_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'expiry_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'image': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        cost_price = cleaned_data.get('cost_price')
+        selling_price = cleaned_data.get('selling_price')
+        
+        if cost_price and selling_price and cost_price > selling_price:
+            raise forms.ValidationError(
+                "Cost price (Rs. %(cost)s) is greater than selling price (Rs. %(selling)s). This will result in a loss.",
+                params={'cost': cost_price, 'selling': selling_price},
+                code='negative_margin'
+            )
+        
+        return cleaned_data
 
 
 

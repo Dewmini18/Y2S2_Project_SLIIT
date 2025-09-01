@@ -1,0 +1,30 @@
+{% extends 'onlineStore_base.html' %}
+
+{% block content %}
+  <h2>Your Cart</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in cart_items %}
+        <tr>
+          <td>{{ CartItem.product.name }}</td>
+          <td>{{ CartItem.quantity }}</td>
+          <td>{{ CartItem.price }}</td>
+          <td>{{ CartItem.price * CartItem.quantity }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <h3>Total: {{ cart_total }}</h3>
+  <form method="POST" action="{% url 'checkout' %}">
+    {% csrf_token %}
+    <button type="submit">Proceed to Checkout</button>
+  </form>
+{% endblock %}

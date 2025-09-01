@@ -1,0 +1,122 @@
+{% extends 'registration/base.html' %}
+
+{% block content %}
+
+<style>
+  *, *::before, *::after {
+    font-family: "Montserrat", sans-serif !important;
+  }
+  
+  body {
+    background-color: #f8fafc;
+  }
+</style>
+<div class="max-w-4xl mx-auto px-6 py-10 space-y-8">
+  <!-- Header with back button -->
+  <div class="flex justify-between items-center">
+    <h2 class="text-3xl font-extrabold text-gray-900">Customer Details</h2>
+    <a href="{% url 'customer_list' %}" 
+       class="flex items-center gap-2 bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-xl shadow-lg transition">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to Customer List
+    </a>
+  </div>
+  
+  <!-- Customer Profile Card -->
+  <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+    <!-- Header with avatar -->
+    <div class="bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-8 text-white">
+      <div class="flex items-center gap-5">
+        <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center text-2xl font-bold text-blue-600">
+          {{ customer_user.username|first|upper }}
+        </div>
+        <div>
+          <h3 class="text-2xl font-bold">{{ customer_user.username }}</h3>
+          <p class="text-blue-100">Customer since {{ customer_user.date_joined|date:"F j, Y" }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Details sections -->
+    <div class="p-6 space-y-8">
+      <!-- Account Information -->
+      <div>
+        <h4 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Account Information</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
+          <div>
+            <p class="text-sm text-gray-500">Email Address</p>
+            <p class="text-gray-900">{{ customer_user.email }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Date Joined</p>
+            <p class="text-gray-900">{{ customer_user.date_joined|date:"F j, Y, g:i A" }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Last Login</p>
+            <p class="text-gray-900">
+              {% if customer_user.last_login %}
+                {{ customer_user.last_login|date:"F j, Y, g:i A" }}
+              {% else %}
+                <span class="text-gray-500">Never</span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Personal Information</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
+          <div>
+            <p class="text-sm text-gray-500">First Name</p>
+            <p class="text-gray-900">{{ customer_user.first_name|default:"Not provided" }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Last Name</p>
+            <p class="text-gray-900">{{ customer_user.last_name|default:"Not provided" }}</p>
+          </div>
+        </div>
+      </div>
+      <!-- Contact Information -->
+      <div>
+        <h4 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Contact Information</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
+          <div>
+            <p class="text-sm text-gray-500">Phone Number</p>
+            <p class="text-gray-900">{{ customer.phone|default:"Not provided" }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">NIC Number</p>
+            <p class="text-gray-900">{{ customer.nic|default:"Not provided" }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Address Information -->
+      <div>
+        <h4 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Address Information</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
+          <div class="md:col-span-2">
+            <p class="text-sm text-gray-500">Street Address</p>
+            <p class="text-gray-900 whitespace-pre-line">{{ customer.address|default:"Not provided" }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">City</p>
+            <p class="text-gray-900">{{ customer.city|default:"Not provided" }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Postal Code</p>
+            <p class="text-gray-900">{{ customer.postal_code|default:"Not provided" }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Country</p>
+            <p class="text-gray-900">{{ customer.country|default:"Not provided" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

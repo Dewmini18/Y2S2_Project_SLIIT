@@ -20,17 +20,44 @@
   <h2 class="font-serif text-left text-4xl font-semibold text-slate-800 mb-8">Medicine Inventory Management</h2>
   <hr class="border-slate-300 mb-10">
 
-  <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
-    <div class="flex flex-wrap items-center gap-3">
-      <a href="{% url 'medicine_table' %}" class="bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors">View as Table</a>
-      <a href="{% url 'med_inventory_dash' %}" class="bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors">Return to Dashboard</a>
-      <a href="{% url 'export_medicine_csv' %}" class="bg-green-600 hover:bg-green-800 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors">Export as CSV</a>
-      <a href="{% url 'export_medicine_pdf' %}" class="bg-red-600 hover:bg-red-900 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors">Export as PDF</a>
-    </div>
-    <div>
-      <a href="{% url 'medicine_create' %}" class="bg-blue-600 hover:bg-blue-900 text-white font-medium py-4 px-40 rounded-md shadow-sm transition-colors">Register New Medication</a>
-    </div>
+<div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-6 gap-4">
+  <!-- Left Buttons -->
+  <div class="flex flex-wrap gap-3 w-full sm:w-auto">
+    <a href="{% url 'medicine_table' %}" 
+       class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors flex-1 sm:flex-none text-center">
+      <span class="flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z" clip-rule="evenodd"></path>
+        </svg>
+        Table View
+      </span>
+    </a>
+
+    <a href="{% url 'med_inventory_dash' %}" 
+       class="bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors flex-1 sm:flex-none text-center">
+      Return to Dashboard
+    </a>
+
+    <a href="{% url 'export_medicine_csv' %}" 
+       class="bg-green-600 hover:bg-green-800 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors flex-1 sm:flex-none text-center">
+      Export as CSV
+    </a>
+
+    <a href="{% url 'export_medicine_pdf' %}" 
+       class="bg-red-600 hover:bg-red-900 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors flex-1 sm:flex-none text-center">
+      Export as PDF
+    </a>
   </div>
+
+  <!-- Register New Medication Button -->
+  <div class="w-full sm:w-auto">
+    <a href="{% url 'medicine_create' %}" 
+       class="bg-blue-600 hover:bg-blue-900 text-white font-medium py-3 sm:py-4 px-6 sm:px-12 lg:px-40 rounded-md shadow-sm transition-colors block text-center w-full sm:w-auto">
+      Register New Medication
+    </a>
+  </div>
+</div>
+
 
   <div class="text-left my-5">
     <div class="relative inline-block group">
@@ -114,36 +141,59 @@
     </form>
   </div>
 
-  <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-    {% for med in medicine %}
-      <div class="bg-white rounded-lg shadow-md border border-slate-200 flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div class="p-4 border-b border-slate-200 flex justify-between items-center">
-          <h2 class="font-serif text-lg font-semibold text-slate-800">{{ med.name }}</h2>
-          <div class="flex items-center gap-2">
-            {% if med.is_expired %}
-              <span class="text-s font-semibold text-red-800 bg-red-100 border border-red-200 px-2 py-0.5 rounded-full">Expired</span>
-            {% elif med.near_expiry %}
-              <span class="text-s font-semibold text-yellow-800 bg-yellow-100 border border-yellow-200 px-2 py-0.5 rounded-full">Near Expiry</span>
+<div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+  {% for med in medicine %}
+    <div class="bg-white rounded-lg shadow-md border border-slate-200 flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+      
+            {% if med.image %}
+            <div class="relative w-full" style="padding-bottom: 100%;">
+                <img src="{{ med.image.url }}" alt="{{ med.name }}" 
+                    class="absolute top-0 left-0 w-full h-full object-cover">
+            </div>
+            {% else %}
+            <div class="relative w-full" style="padding-bottom: 100%;">
+                <div class="absolute top-0 left-0 w-full h-full bg-gray-200 flex items-center justify-center">
+                    <span class="text-gray-500 font-medium">No Image</span>
+                </div>
+            </div>
             {% endif %}
-            {% if med.low_stock %}
-              <span class="text-s font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">Low Stock</span>
-            {% endif %}
-          </div>
-        </div>
-        <div class="p-4 text-sm text-slate-600 space-y-2 flex-grow">
-          <p><strong class="font-medium text-slate-700">Batch Number:</strong> {{ med.batch_number }}</p>
-          <p><strong class="font-medium text-slate-700">Brand:</strong> {{ med.brand }}</p>
-          <p><strong class="font-medium text-slate-700">Category:</strong> {{ med.category }}</p>
-          <p><strong class="font-medium text-slate-700">Dosage:</strong> {{ med.dosage }}</p>
-          <p class="font-medium text-base text-slate-800 mt-1"><strong>Quantity in Stock:</strong> {{ med.quantity_in_stock }}</p>
-        </div>
-        <div class="p-3 mt-auto bg-slate-50 border-t border-slate-200 flex justify-end items-center gap-3">
-          <a href="{% url 'medicine_update' med.id %}" class="text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 px-4 py-2 rounded-md transition-colors">Modify Record</a>
-          <button type="button" class="open-modal-button text-sm font-medium bg-red-100 text-red-800 hover:bg-red-200 px-4 py-2 rounded-md transition-colors" data-modal-target="#deleteModal{{ med.id }}">
-            Remove
-          </button>
+      
+      <!-- Card Header -->
+      <div class="p-4 border-b border-slate-200 flex justify-between items-center">
+        <h2 class="font-serif text-lg font-semibold text-slate-800">{{ med.name }}</h2>
+        <div class="flex items-center gap-2">
+          {% if med.is_expired %}
+            <span class="text-xs font-semibold text-red-800 bg-red-100 border border-red-200 px-2 py-0.5 rounded-full">Expired</span>
+          {% elif med.near_expiry %}
+            <span class="text-xs font-semibold text-yellow-800 bg-yellow-100 border border-yellow-200 px-2 py-0.5 rounded-full">Near Expiry</span>
+          {% endif %}
+          {% if med.low_stock %}
+            <span class="text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">Low Stock</span>
+          {% endif %}
         </div>
       </div>
+
+      <!-- Card Body -->
+      <div class="p-4 text-sm text-slate-600 space-y-2 flex-grow">
+        <p><strong class="font-medium text-slate-700">Batch Number:</strong> {{ med.batch_number }}</p>
+        <p><strong class="font-medium text-slate-700">Brand:</strong> {{ med.brand }}</p>
+        <p><strong class="font-medium text-slate-700">Category:</strong> {{ med.category }}</p>
+        <p><strong class="font-medium text-slate-700">Dosage:</strong> {{ med.dosage }}</p>
+        <p><strong class="font-medium text-slate-700">Cost:</strong> Rs. {{ med.cost_price }}</p>
+        <p class="font-medium text-base text-slate-800 mt-1"><strong>Selling:</strong> Rs. {{ med.selling_price }}</p>
+        <p class="font-medium text-base text-slate-800 mt-1"><strong>Type:</strong> {{ med.get_medicine_type_display }}</p>
+        <p class="font-medium text-base text-slate-800 mt-1"><strong>Quantity in Stock:</strong> {{ med.quantity_in_stock }}</p>
+      </div>
+
+      <!-- Card Footer -->
+      <div class="p-3 mt-auto bg-slate-50 border-t border-slate-200 flex justify-end items-center gap-3">
+        <a href="{% url 'medicine_update' med.id %}" class="text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 px-4 py-2 rounded-md transition-colors">Modify Record</a>
+        <button type="button" class="open-modal-button text-sm font-medium bg-red-100 text-red-800 hover:bg-red-200 px-4 py-2 rounded-md transition-colors" data-modal-target="#deleteModal{{ med.id }}">
+          Remove
+        </button>
+      </div>
+    </div>
+
 
       <div id="deleteModal{{ med.id }}" class="modal fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
         <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">

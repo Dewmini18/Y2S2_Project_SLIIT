@@ -1,0 +1,41 @@
+{% extends 'registration/base.html' %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-10 px-6">
+  <div class="max-w-5xl mx-auto">
+    
+    <!-- Header Section -->
+    <div class="bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-2xl shadow-lg p-8 mb-10">
+      <h1 class="text-3xl font-bold mb-2">Welcome, {{ user.username }} 👋</h1>
+      <p class="text-gray-100 text-lg">This is your dashboard where you can manage your profile and view your orders.</p>
+    </div>
+
+    <!-- Actions Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Profile Card -->
+      <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Your Profile</h2>
+        <p class="text-gray-600 text-sm mb-4">Update your personal details and preferences.</p>
+        <a href="{% url 'edit_customer_profile' %}" class="inline-block bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg shadow transition">Manage Profile</a>
+      </div>
+
+      <!-- Orders Card -->
+      <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Your Orders</h2>
+        <p class="text-gray-600 text-sm mb-4">Track your recent purchases and order history.</p>
+        <a href="#" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition">View Orders</a>
+      </div>
+
+      <!-- Logout Card -->
+      <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Logout</h2>
+        <p class="text-gray-600 text-sm mb-4">Securely sign out of your account.</p>
+        <a href="{% url 'logout' %}" class="inline-block bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow transition">Logout</a>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+{% endblock %}

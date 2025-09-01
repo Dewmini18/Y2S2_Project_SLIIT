@@ -1,0 +1,130 @@
+{% extends 'Medicine_inventory/base.html' %}
+
+{% block content %}
+<div class="min-h-full">
+  <!-- Navbar -->
+  <nav class="bg-gray-800">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between">
+        
+        <!-- Logo & Links -->
+        <div class="flex items-center">
+          <div class="shrink-0">
+            <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=cyan&shade=500" 
+                 alt="Your Company" class="h-8 w-8" />
+          </div>
+          <div class="hidden md:block">
+            <div class="ml-10 flex items-baseline space-x-4">
+              <a href="{% url 'admin_dashboard' %}" 
+                 class="rounded-md bg-cyan-700 px-3 py-2 text-sm font-medium text-white">
+                 Dashboard
+              </a>
+              <a href="{% url 'staff_list' %}" 
+                 class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                 Staff
+              </a>
+              <a href="{% url 'customer_list' %}" 
+                 class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                 Customers
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile & Notifications -->
+        <div class="hidden md:flex items-center space-x-4">
+          <!-- Notifications -->
+          <button type="button" 
+                  class="relative rounded-full p-1 text-gray-400 hover:text-white focus:outline-none">
+            <span class="sr-only">View notifications</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                 stroke-width="1.5" class="h-6 w-6">
+              <path d="M14.857 17.082a23.848 23.848 0 
+                       0 0 5.454-1.31A8.967 8.967 0 0 
+                       1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 
+                       8.967 0 0 1-2.312 6.022c1.733.64 
+                       3.56 1.085 5.455 1.31m5.714 0a24.255 
+                       24.255 0 0 1-5.714 0m5.714 0a3 3 0 
+                       1 1-5.714 0" 
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <!-- Profile dropdown -->
+          <div class="relative">
+            <button id="profile-menu-btn" 
+                    class="flex max-w-xs items-center rounded-full focus:outline-none">
+              <img class="h-8 w-8 rounded-full" 
+                   src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" 
+                   alt="Admin profile" />
+            </button>
+
+            <!-- Dropdown menu -->
+            <div id="profile-menu" 
+                 class="hidden absolute right-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Your profile</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+              <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile menu button -->
+        <div class="-mr-2 flex md:hidden">
+          <button id="mobile-menu-btn" type="button" 
+                  class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none">
+            <span class="sr-only">Open main menu</span>
+            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1">
+      <a href="{% url 'admin_dashboard' %}" 
+         class="block rounded-md bg-cyan-700 px-3 py-2 text-base font-medium text-white">
+         Dashboard
+      </a>
+      <a href="{% url 'staff_list' %}" 
+         class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+         Staff
+      </a>
+      <a href="{% url 'customer_list' %}" 
+         class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+         Customers
+      </a>
+    </div>
+  </nav>
+
+  <!-- Page header -->
+  <header class="bg-white shadow-sm">
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main>
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <!-- Insert admin widgets / content here -->
+    </div>
+  </main>
+</div>
+
+<!-- JS for toggles -->
+<script>
+  // Profile dropdown
+  document.getElementById('profile-menu-btn').addEventListener('click', () => {
+    document.getElementById('profile-menu').classList.toggle('hidden');
+  });
+
+  // Mobile menu
+  document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.toggle('hidden');
+  });
+</script>
+{% endblock %}

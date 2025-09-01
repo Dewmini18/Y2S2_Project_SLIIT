@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice from Our Clinic</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .invoice-details p {
+            margin: 5px 0;
+        }
+        .invoice-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .invoice-items th, .invoice-items td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        .invoice-items th {
+            background-color: #f9f9f9;
+        }
+        .total-section {
+            text-align: right;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h2>Invoice #{{ payment.id }}</h2>
+        </div>
+
+        <div class="invoice-details">
+            <div>
+                <p><strong>Patient:</strong> {{ patient.full_name }}</p>
+                <p><strong>Payment Date:</strong> {{ payment.payment_date|date:"F d, Y" }}</p>
+            </div>
+            <div>
+                <p><strong>Prescription:</strong> #{{ payment.prescription.id }}</p>
+                <p><strong>Status:</strong> <span style="color: green;">{{ payment.status }}</span></p>
+            </div>
+        </div>
+
+        <h3>Invoice Items</h3>
+        <table class="invoice-items">
+            <thead>
+                <tr>
+                    <th>Medicine</th>
+                    <th>Quantity</th>
+                    <th>Price Per Unit</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loop through the invoice items. Assuming 'payment.items' exists. -->
+                {% for item in payment.items.all %}
+                <tr>
+                    <td>{{ item.medicine.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.price_per_unit|floatformat:2 }}</td>
+                    <td>${{ item.total_price|floatformat:2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No items found for this invoice.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total-section">
+            <p>Total Invoice Amount: ${{ payment.total_amount|floatformat:2 }}</p>
+        </div>
+
+        <p style="text-align: center; font-size: 0.9em; margin-top: 30px; color: #777;">
+            Thank you for your payment.
+        </p>
+    </div>
+
+</body>
+</html>

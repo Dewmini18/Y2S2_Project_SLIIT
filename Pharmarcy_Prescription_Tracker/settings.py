@@ -28,18 +28,34 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LOGIN_URL = '/accounts/login/'
+# Custom user model
+AUTH_USER_MODEL = "accounts.User"
+LOGIN_REDIRECT_URL = "redirect_dashboard"
+LOGOUT_REDIRECT_URL = "login"
 
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.humanize',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles',  # <-- THIS MUST BE PRESENT
+
+    # Your apps
     'Medicine_inventory',
     'prescriptions',
+    'Non_Medicine_inventory',
+    'payments',
+    'onlineStore',
+    'widget_tweaks',
+    'accounts',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -53,6 +69,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'Pharmarcy_Prescription_Tracker.middleware.NoCacheMiddleware',
+    'Pharmarcy_Prescription_Tracker.middleware.RoleBasedAccessMiddleware'
 ]
 
 ROOT_URLCONF = 'Pharmarcy_Prescription_Tracker.urls'
@@ -60,16 +78,18 @@ ROOT_URLCONF = 'Pharmarcy_Prescription_Tracker.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATE_DIR],
+        'DIRS': [TEMPLATE_DIR],  # Add this line with your template directory
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
+                'django.template.context_processors.csrf'
+            ]
+        }
+    }
 ]
 
 WSGI_APPLICATION = 'Pharmarcy_Prescription_Tracker.wsgi.application'
@@ -110,7 +130,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Colombo'
 
 USE_I18N = True
 
@@ -122,7 +142,30 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# This tells Django where to find static files that are not tied to a specific app.
+# Make sure this list includes the path to your project-wide static files.
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Media files settings
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51RuS6kLxYGksYlO5cOHxyasQv42vYzERNmGu7gGnrd4T5uhHNtYZxDiLQIqYRAen1aMX0mp34VzuAmFPzv5mYgmq00kovaF8kT'
+STRIPE_SECRET_KEY = 'sk_test_51RuS6kLxYGksYlO5mMYeMxHMNY1d0C9gwaxTURULb7K6xtfYe49N1fakp7h2gQLOMMyUxkKytEzOGCfUKAQ2d9mY003oUw3FVb'
+
+
+# Email Backend Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com' 
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'medisync30@gmail.com' # Your email address
+EMAIL_HOST_PASSWORD = "sgjc lmry uhbm tjiq"
+DEFAULT_FROM_EMAIL = 'medisync30@gmail.com'

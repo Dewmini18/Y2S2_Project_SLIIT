@@ -1,0 +1,89 @@
+{% extends 'registration/base.html' %}
+
+{% block content %}
+<style>
+  *, *::before, *::after {
+    font-family: "Montserrat", sans-serif !important;
+  }
+  
+  body {
+    background: linear-gradient(to bottom right, #e0f2fe, #f8fafc);
+  }
+</style>
+
+<div class="min-h-screen py-10 px-6">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row items-center justify-between mb-10">
+            <div>
+                <h1 class="text-4xl font-extrabold text-blue-700">Admin Dashboard</h1>
+            </div>
+        <div class="flex items-center gap-4 bg-white shadow-sm px-4 py-3 rounded-lg border border-gray-200">
+            {% if user.is_authenticated %}
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                        {{ user.username|first|upper }}
+                    </div>
+                    <span class="text-sm sm:text-base text-gray-700 font-medium">
+                        Welcome, <span class="font-semibold">{{ user.username }}</span>
+                    </span>
+                </div>
+                <a href="{% url 'logout' %}"
+                class="px-4 py-2 text-sm font-medium rounded-md bg-red-500 text-white shadow-sm
+                        hover:bg-red-600 transition-colors duration-300 ease-in-out">
+                    Logout
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}"
+                class="px-4 py-2 text-sm font-medium rounded-md bg-green-600 text-white shadow-sm
+                        hover:bg-green-700 transition-colors duration-300 ease-in-out">
+                    Login
+                </a>
+            {% endif %}
+        </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
+            <a href="{% url 'create_staff' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6 px-4 rounded-2xl shadow-lg flex flex-col items-center justify-center transition duration-300 transform hover:-translate-y-1 hover:scale-105">
+                <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <span>Create New Staff</span>
+            </a>
+
+            <a href="{% url 'staff_list' %}" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-6 px-4 rounded-2xl shadow-lg flex flex-col items-center justify-center transition duration-300 transform hover:-translate-y-1 hover:scale-105">
+                <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"></path>
+                </svg>
+                <span>Manage Staff</span>
+            </a>
+
+            <a href="{% url 'customer_list' %}" 
+            class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-6 px-4 rounded-2xl shadow-lg 
+                    flex flex-col items-center justify-center transition-transform duration-300 
+                    transform hover:-translate-y-1 hover:scale-105">
+                
+                <!-- User Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mb-2">
+                    <path stroke-linecap="round" stroke-linejoin="round" 
+                        d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                </svg>
+
+                <!-- Button Label -->
+                <span>Manage Customer</span>
+            </a>
+
+        </div>
+
+        <!-- Info Panel -->
+        <div class="bg-white shadow-lg rounded-2xl border border-gray-200 p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Overview</h2>
+            <p class="text-gray-700 leading-relaxed">
+                This is your admin dashboard where you can manage staff accounts, monitor system activities, and oversee operations. Use the quick action cards above to perform tasks efficiently.
+            </p>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

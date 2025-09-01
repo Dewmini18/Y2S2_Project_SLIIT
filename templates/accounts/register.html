@@ -1,0 +1,203 @@
+{% extends 'Medicine_inventory/base.html' %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-2xl w-full space-y-8">
+    <div class="text-center">
+      <img class="mx-auto h-12 w-auto" src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="User Icon">
+      <h2 class="mt-6 text-3xl font-extrabold text-gray-900">Create a Customer Account</h2>
+      <p class="mt-2 text-sm text-gray-600">
+        Fill in the details below to register
+      </p>
+    </div>
+
+    <div class="bg-white py-8 px-6 shadow-lg rounded-xl sm:px-10">
+      <form method="post" class="space-y-8">
+        {% csrf_token %}
+        
+        <!-- Account Information -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-medium text-gray-900 border-b pb-2">Account Information</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="relative">
+              {{ form.username }}
+              <label for="{{ form.username.id_for_label }}" class="absolute left-3 top-2 text-gray-400 text-sm transition-all duration-200 transform -translate-y-1/2 pointer-events-none">
+                Username
+              </label>
+              {% if form.username.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.username.errors|striptags }}</p>
+              {% endif %}
+            </div>
+            <div class="relative">
+              {{ form.email }}
+              <label for="{{ form.email.id_for_label }}" class="absolute left-3 top-2 text-gray-400 text-sm transition-all duration-200 transform -translate-y-1/2 pointer-events-none">
+                Email
+              </label>
+              {% if form.email.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.email.errors|striptags }}</p>
+              {% endif %}
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="relative">
+              {{ form.password1 }}
+              <label for="{{ form.password1.id_for_label }}" class="absolute left-3 top-2 text-gray-400 text-sm transition-all duration-200 transform -translate-y-1/2 pointer-events-none">
+                Password
+              </label>
+              {% if form.password1.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.password1.errors|striptags }}</p>
+              {% endif %}
+            </div>
+            <div class="relative">
+              {{ form.password2 }}
+              <label for="{{ form.password2.id_for_label }}" class="absolute left-3 top-2 text-gray-400 text-sm transition-all duration-200 transform -translate-y-1/2 pointer-events-none">
+                Confirm Password
+              </label>
+              {% if form.password2.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.password2.errors|striptags }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Personal Information -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-medium text-gray-900 border-b pb-2">Personal Information</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="relative">
+              {{ form.first_name }}
+              <label for="{{ form.first_name.id_for_label }}" class="absolute left-3 top-2 text-gray-400 text-sm transition-all duration-200 transform -translate-y-1/2 pointer-events-none">
+                First Name
+              </label>
+              {% if form.first_name.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.first_name.errors|striptags }}</p>
+              {% endif %}
+            </div>
+            <div class="relative">
+              {{ form.last_name }}
+              <label for="{{ form.last_name.id_for_label }}" class="absolute left-3 top-2 text-gray-400 text-sm transition-all duration-200 transform -translate-y-1/2 pointer-events-none">
+                Last Name
+              </label>
+              {% if form.last_name.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.last_name.errors|striptags }}</p>
+              {% endif %}
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="relative">
+              {{ form.phone }}
+              <label for="{{ form.phone.id_for_label }}" class="absolute left-3 top-2 text-gray-400 text-sm transition-all duration-200 transform -translate-y-1/2 pointer-events-none">
+                Phone Number
+              </label>
+              {% if form.phone.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.phone.errors|striptags }}</p>
+              {% endif %}
+            </div>
+            <div class="relative">
+              {{ form.nic }}
+              <label for="{{ form.nic.id_for_label }}" class="absolute left-3 top-2 text-gray-400 text-sm transition-all duration-200 transform -translate-y-1/2 pointer-events-none">
+                NIC Number
+              </label>
+              {% if form.nic.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.nic.errors|striptags }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        
+        <!-- Address Information -->
+        <div class="space-y-6">
+          <h3 class="text-lg font-medium text-gray-900 border-b pb-2">Address Information</h3>
+          <div class="relative mb-2.5">
+              {{ form.address }}
+              <label for="{{ form.address.id_for_label }}" class="absolute left-3 top-2 text-gray-400 text-sm transition-all duration-200 transform -translate-y-1/2 pointer-events-none">
+                Address
+              </label>
+              {% if form.address.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.address.errors|striptags }}</p>
+              {% endif %}
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="relative">
+              {{ form.city }}
+              <label for="{{ form.city.id_for_label }}" class="absolute left-3 top-2 text-gray-400 text-sm transition-all duration-200 transform -translate-y-1/2 pointer-events-none">
+                City
+              </label>
+              {% if form.city.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.city.errors|striptags }}</p>
+              {% endif %}
+            </div>
+            <div class="relative">
+              {{ form.postal_code }}
+              <label for="{{ form.postal_code.id_for_label }}" class="absolute left-3 top-2 text-gray-400 text-sm transition-all duration-200 transform -translate-y-1/2 pointer-events-none">
+                Postal Code
+              </label>
+              {% if form.postal_code.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.postal_code.errors|striptags }}</p>
+              {% endif %}
+            </div>
+            <div class="relative">
+              {{ form.country }}
+              <label for="{{ form.country.id_for_label }}" class="absolute left-3 top-2 text-gray-400 text-sm transition-all duration-200 transform -translate-y-1/2 pointer-events-none">
+                Country
+              </label>
+              {% if form.country.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.country.errors|striptags }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full flex justify-center py-2 px-4 text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-cyan-500 transition duration-300 shadow-md">
+          Register
+        </button>
+
+        <p class="mt-4 text-center text-sm text-gray-500">
+          Already have an account? 
+          <a href="{% url 'login' %}" class="font-medium text-cyan-600 hover:text-purple-600">Sign in</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Floating label effect */
+  input:focus + label,
+  input:not(:placeholder-shown) + label,
+  textarea:focus + label,
+  textarea:not(:placeholder-shown) + label {
+    top: -0.5rem;
+    left: 0.75rem;
+    font-size: 0.75rem;
+    color: #2000d4; /* Cyan */
+    background-color: white;
+    padding: 0 0.25rem;
+  }
+
+  .relative{
+    margin-bottom: 10px;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db; /* Gray-300 */
+    border-radius: 0.5rem;
+    background-color: white;
+    outline: none;
+    transition: all 0.3s;
+  }
+
+  input:focus, textarea:focus {
+    border-color: #273cb0; /* Purple */
+    box-shadow: 0 0 0 2px rgba(39, 108, 176, 0.2);
+  }
+  
+  /* Specific for textarea */
+  textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+</style>
+{% endblock %}

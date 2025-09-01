@@ -19,6 +19,7 @@ class PatientForm(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Patient Last Name'}),
             'contact_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., +1234567890'}),
             'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Patient Address'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'patient@example.com'}),
         }
         # Labels for form fields
         labels = {
@@ -27,6 +28,7 @@ class PatientForm(forms.ModelForm):
             'date_of_birth': 'Date of Birth',
             'contact_number': 'Contact Number',
             'address': 'Address',
+            'email' : 'Email-Address'
         }
 
 # Form for creating and updating Doctor instances.

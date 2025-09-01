@@ -5,77 +5,151 @@
     <title>Medicine Inventory Report</title>
     <style>
         body {
-            font-family: "Arial", "Helvetica Neue", Helvetica, sans-serif;
-            margin: 48px 32px;
-            color: #222;
+            font-family: "Segoe UI", Arial, sans-serif;
+            margin: 32px;
             background: #fff;
+            color: #333;
+            font-size: 13px;
         }
 
-        .header-line {
-            border-bottom: 2px solid #b22234;
-            margin-bottom: 32px;
-            opacity: 0.7;
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 3px solid #009688;
+            margin-bottom: 25px;
         }
 
-        h2 {
-            text-align: center;
-            font-size: 28px;
-            margin-bottom: 18px;
-            color: #b22234;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
+        .logo {
+            width: 100px;
+            height: auto;
+        }
+
+        .report-title {
+            font-size: 24px;
             font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #00796b;
         }
 
+        /* Metadata Box */
+        .metadata {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            flex: 1;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 12px 16px;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .card-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #009688;
+        }
+
+        /* Table */
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 10px;
-            margin-bottom: 32px;
+            background: #fff;
+            font-size: 12.5px;
         }
 
         thead th {
-            background-color: #b22234;
+            background-color: #009688;
             color: #fff;
-            padding: 12px 8px;
-            border: 1px solid #9e1d2f;
+            padding: 10px 8px;
             text-align: left;
             font-weight: 600;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
         }
 
         tbody td {
-            padding: 10px 8px;
-            border: 1px solid #e0e0e0;
-            background-color: #f9f9f9;
+            padding: 9px 8px;
+            border-bottom: 1px solid #e6e6e6;
         }
 
         tbody tr:nth-child(even) td {
-            background-color: #f3f3f3;
+            background-color: #f9f9f9;
         }
 
-        tfoot td {
-            border: none;
-            padding-top: 18px;
-            font-size: 12px;
-            color: #888;
+        tbody tr:hover td {
+            background-color: #f1fdfb;
+        }
+
+        /* Align specific columns */
+        td:nth-child(5) {
             text-align: right;
+            font-weight: 600;
+            color: #444;
         }
 
+        td:nth-child(6) {
+            text-align: center;
+            font-size: 12px;
+            color: #b71c1c;
+            font-weight: 500;
+        }
+
+        /* Footer */
         .footer {
             margin-top: 40px;
-            font-size: 12px;
+            font-size: 11px;
             text-align: center;
-            color: #888;
-            border-top: 1px solid #b22234;
-            padding-top: 12px;
-            letter-spacing: 0.5px;
+            color: #666;
+            border-top: 1.5px solid #009688;
+            padding-top: 10px;
+            letter-spacing: 0.3px;
         }
     </style>
 </head>
 <body>
-    <div class="header-line"></div>
-    <h2>Medicine Inventory Report</h2>
+    <!-- Header -->
+    <div class="header">
+        <img src="data:image/png;base64,{{ logo_data }}" alt="Pharmacy Logo" class="logo">
+        <div class="report-title">Medicine Inventory Report</div>
+    </div>
+
+    <!-- Metadata / Summary -->
+    <div class="metadata">
+        <div class="card">
+            <div class="card-title">Total Medicines</div>
+            <div class="card-value">{{ total_medicines }}</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Low Stock Items</div>
+            <div class="card-value">{{ low_stock_count }}</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Expired</div>
+            <div class="card-value">{{ expired }}</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Report Date</div>
+            <div class="card-value">{{ now|date:"M d, Y" }}</div>
+        </div>
+    </div>
+
+    <!-- Table -->
     <table>
         <thead>
             <tr>
@@ -100,8 +174,10 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <!-- Footer -->
     <div class="footer">
-        Report generated on {{ now|date:"F d, Y" }} &bull; Confidential &bull; For internal use only
+        Report generated on {{ now|date:"F d, Y" }} • Confidential • For internal use only
     </div>
 </body>
 </html>

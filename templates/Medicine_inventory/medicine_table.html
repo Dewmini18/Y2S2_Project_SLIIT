@@ -28,7 +28,14 @@
   <hr class="border-slate-300 mb-10">
   <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
     <div class="flex flex-wrap items-center gap-3">
-      <a href="{% url 'medicine_cards' %}" class="bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-4 rounded-md transition-colors">Card View</a>
+      <a href="{% url 'medicine_cards' %}" class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors text-center w-full sm:w-auto">
+          <span class="flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                </svg>
+              Grid View
+          </span>
+      </a>
       <a href="{% url 'med_inventory_dash' %}" class="bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-semibold py-2 px-4 rounded-md transition-colors">Return to Dashboard</a>
       <a href="{% url 'export_medicine_csv' %}" class="bg-green-600 hover:bg-green-800 text-white font-semibold py-2 px-4 rounded-md transition-colors">Export as CSV</a>
       <a href="{% url 'export_medicine_pdf' %}" class="bg-red-600 hover:bg-red-900 text-white font-semibold py-2 px-4 rounded-md transition-colors">Export as PDF</a>
@@ -110,32 +117,57 @@
   </div>
 
   {% if medicine %}
-    <div class="bg-white rounded-lg shadow-md">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
       <table class="table-auto w-full divide-y divide-slate-200">
-        <thead class="bg-slate-800">
+        <thead class="bg-white-800">
           <tr>
-            <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-slate-200 uppercase tracking-wider">#</th>
-            <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-slate-200 uppercase tracking-wider">Name</th>
-            <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-slate-200 uppercase tracking-wider">Batch</th>
-            <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-slate-200 uppercase tracking-wider">Brand</th>
-            <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-slate-200 uppercase tracking-wider">Category</th>
-            <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-slate-200 uppercase tracking-wider">Dosage</th>
-            <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-slate-200 uppercase tracking-wider">Quantity</th>
-            <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-slate-200 uppercase tracking-wider">Alerts</th>
-            <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-slate-200 uppercase tracking-wider">Actions</th>
+            <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-slate-800 uppercase tracking-wider">#</th>
+            <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-slate-800 uppercase tracking-wider">
+              <a href="?sort=name&dir={% if current_sort == 'name' and current_dir == 'asc' %}desc{% else %}asc{% endif %}&{{ request.GET.urlencode|cut:'sort'|cut:'dir' }}" class="flex items-center gap-1">
+                Name
+                {% if current_sort == 'name' %}
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {% if current_dir == 'asc' %}<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />{% else %}<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />{% endif %}
+                  </svg>
+                {% endif %}
+              </a>
+            </th>
+            <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-slate-800 uppercase tracking-wider">Batch</th>
+            <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-slate-800 uppercase tracking-wider">Brand</th>
+            <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-slate-800 uppercase tracking-wider">Category</th>
+            <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-slate-800 uppercase tracking-wider">Price</th>
+            <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-slate-800 uppercase tracking-wider">Type</th>
+            <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-slate-800 uppercase tracking-wider">Dosage</th>
+            <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-slate-800 uppercase tracking-wider">
+              <a href="?sort=quantity_in_stock&dir={% if current_sort == 'quantity_in_stock' and current_dir == 'asc' %}desc{% else %}asc{% endif %}&{{ request.GET.urlencode|cut:'sort'|cut:'dir' }}" class="flex justify-center items-center gap-1">
+                Quantity
+                {% if current_sort == 'quantity_in_stock' %}
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {% if current_dir == 'asc' %}<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />{% else %}<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />{% endif %}
+                  </svg>
+                {% endif %}
+              </a>
+            </th>
+            <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-slate-800 uppercase tracking-wider">Alerts</th>
+            <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-slate-800 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-slate-200">
           {% for med in medicine %}
           <tr class="hover:bg-slate-100 transition-colors">
-            <td class="px-2 py-4 whitespace-nowrap text-sm font-medium text-slate-800 text-center">{{ forloop.counter }}</td>
-            <td class="px-2 py-4 whitespace-nowrap text-sm font-semibold text-slate-900">{{ med.name }}</td>
-            <td class="px-2 py-4 whitespace-nowrap text-sm text-slate-500">{{ med.batch_number }}</td>
-            <td class="px-2 py-4 whitespace-nowrap text-sm text-slate-500">{{ med.brand }}</td>
-            <td class="px-2 py-4 whitespace-nowrap text-sm text-slate-500">{{ med.category }}</td>
-            <td class="px-2 py-4 whitespace-nowrap text-sm text-slate-500">{{ med.dosage }}</td>
-            <td class="px-2 py-4 whitespace-nowrap text-sm font-medium text-slate-800 text-center">{{ med.quantity_in_stock }}</td>
-            <td class="px-2 py-4 whitespace-nowrap text-center text-sm">
+            <td class="px-2 py-3 whitespace-nowrap text-sm font-medium text-slate-800 text-center">{{ forloop.counter }}</td>
+            <td class="px-2 py-3 whitespace-nowrap text-sm font-semibold text-slate-900">{{ med.name }}</td>
+            <td class="px-2 py-3 whitespace-nowrap text-sm text-slate-500">{{ med.batch_number }}</td>
+            <td class="px-2 py-3 whitespace-nowrap text-sm text-slate-500">{{ med.brand }}</td>
+            <td class="px-2 py-3 whitespace-nowrap text-sm text-slate-500">{{ med.category }}</td>
+            <td class="px-2 py-3 whitespace-nowrap text-sm text-slate-500">
+              <div class="text-sm font-medium text-gray-900">Sell: {{ med.selling_price }}</div>
+              <div class="text-xs text-gray-900">Cost: {{ med.cost_price }}</div>
+            </td>
+            <td class="px-2 py-3 whitespace-nowrap text-sm text-slate-500">{{ med.get_medicine_type_display }}</td>
+            <td class="px-2 py-3 whitespace-nowrap text-sm text-slate-500">{{ med.dosage }}</td>
+            <td class="px-2 py-3 whitespace-nowrap text-sm font-medium text-slate-800 text-center">{{ med.quantity_in_stock }}</td>
+            <td class="px-2 py-3 whitespace-nowrap text-center text-sm">
               <div class="flex flex-col items-center gap-1">
                 {% if med.is_expired %}<span class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-slate-200 text-slate-800">Expired</span>{% endif %}
                 {% if med.near_expiry %}<span class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Near Expiry</span>{% endif %}

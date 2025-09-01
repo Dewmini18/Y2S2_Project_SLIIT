@@ -1,0 +1,94 @@
+{% extends 'registration/base.html' %}
+
+{% block content %}
+
+<style>
+  *, *::before, *::after {
+    font-family: "Montserrat", sans-serif !important;
+  }
+
+  body {
+    background-color: #f8fafc;
+  }
+</style>
+
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-2xl w-full bg-white p-10 rounded-2xl shadow-2xl border border-gray-200">
+        <h2 class="text-3xl font-extrabold text-blue-700 mb-8 text-center">Edit Staff Account</h2>
+
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+
+            <!-- Username -->
+            <div class="relative">
+                <input type="text" name="username" id="id_username"
+                       value="{{ form.username.value|default:'' }}"
+                       placeholder=" "
+                       class="peer block w-full rounded-lg border border-gray-300 bg-transparent px-4 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"/>
+                <label for="id_username" class="absolute left-4 top-2 text-gray-500 text-sm transition-all 
+                    peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base 
+                    peer-focus:top-2 peer-focus:text-blue-600 peer-focus:text-sm">
+                    Username
+                </label>
+                {% if form.username.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.username.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Email -->
+            <div class="relative">
+                <input type="email" name="email" id="id_email"
+                       value="{{ form.email.value|default:'' }}"
+                       placeholder=" "
+                       class="peer block w-full rounded-lg border border-gray-300 bg-transparent px-4 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"/>
+                <label for="id_email" class="absolute left-4 top-2 text-gray-500 text-sm transition-all 
+                    peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base 
+                    peer-focus:top-2 peer-focus:text-blue-600 peer-focus:text-sm">
+                    Email
+                </label>
+                {% if form.email.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Role Dropdown -->
+            <div class="relative">
+                <select name="role" id="id_role"
+                        class="peer block w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 pt-5 pb-2 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                    <option value="" disabled {% if not form.role.value %}selected{% endif %}>-- Select Role --</option>
+                    {% for value, label in form.fields.role.choices %}
+                        {% if value != "customer" %}
+                        <option value="{{ value }}" {% if form.role.value == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <label for="id_role" class="absolute left-4 top-2 text-gray-500 text-sm transition-all 
+                    peer-focus:top-2 peer-focus:text-blue-600 peer-focus:text-sm 
+                    peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base">
+                    Role
+                </label>
+                {% if form.role.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ form.role.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit"
+                class="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700
+                       text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition duration-300 transform hover:scale-105">
+                Save Changes
+            </button>
+        </form>
+
+        <div class="mt-8 text-center">
+            <a href="{% url 'staff_list' %}" 
+               class="inline-block text-blue-600 hover:text-blue-800 font-medium transition duration-200">
+                ← Back to Staff List
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

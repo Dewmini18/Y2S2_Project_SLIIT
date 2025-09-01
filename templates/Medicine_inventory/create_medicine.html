@@ -1,179 +1,190 @@
-{% extends 'base.html' %}
+{% extends 'Medicine_inventory/base.html' %}
 {% load static %}
 
-{% block title %}Add New Medicine{% endblock title %}
+{% block title %}Register New Medication{% endblock title %}
 
 {% block content %}
 <style>
-  body {
-    background-color: #f8f9fa;
-    font-family: 'Segoe UI', Arial, sans-serif;
+  /* Using a more formal, serif font for headings */
+  .font-formal-heading {
+    font-family: "Montserrat", sans-serif;
+  }
+  /* Ensure date inputs show the placeholder text */
+  input[type="date"]:not(:valid):before {
+    content: attr(placeholder);
+    color: #9ca3af; /* gray-400 */
   }
 
-  .form-container {
-    max-width: 1000px;
-    margin: 3rem auto;
-    background-color: #fff;
-    padding: 2rem 2.5rem;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  .max-w-5xl.mx-auto.my-12 {
+    font-family: "Montserrat", sans-serif;
   }
-
-  h2 {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    text-align: left;
-    margin-bottom: 2rem;
-    color: #4c4c4c;
-    font-weight: 700;
-    margin-bottom: 50px;
-
-  }
-
-  .form-label {
-    font-weight: 600;
-    color: #495057;
-    margin-bottom: 0.5rem;
-    display: block;
-  }
-
-  .form-control, select, textarea {
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    border: 1px solid #ced4da;
-    width: 100%;
-    box-sizing: border-box;
-    margin-bottom: 0.5rem;
-    background-color: #f6f8fa;
-    transition: border-color 0.2s;
-  }
-
-  .form-control:focus, select:focus, textarea:focus {
-    border-color: #0d6efd;
-    outline: none;
-    background-color: #fff;
-  }
-
-  textarea {
-    min-height: 100px;
-    resize: vertical;
-  }
-
-  .btn-primary {
-    background-color: #0d6efd;
-    border: none;
-    font-weight: 600;
-    padding: 0.75rem 1rem;
-    font-size: 1.1rem;
-    border-radius: 8px;
-    width: 100%;
-    transition: background-color 0.3s ease;
-    color: #fff;
-    margin-top: 1rem;
-  }
-
-  .btn-primary:hover {
-    background-color: #0b5ed7;
-  }
-
-  .text-danger {
-    font-size: 0.95rem;
-    margin-top: 0.25rem;
-    color: #dc3545;
-  }
-
-  .form-text.text-muted {
-    font-size: 0.9rem;
-    color: #6c757d;
-  }
-
-  .back-link {
-    display: block;
-    margin-top: 1rem;
-    text-align: center;
-    color: #0d6efd;
-    text-decoration: none;
-    font-weight: 500;
-  }
-  .back-link:hover { text-decoration: underline; }
 </style>
 
-<div class="form-container">
-  <h2>Add New Medicine</h2>
-  <hr style="border: none; height: 2px; background-color: #000000;">
-
-  <form method="POST" novalidate>
-    {% csrf_token %}
-    <div class="mb-3">
-      <label class="form-label">Batch Number</label>
-      <div class="row g-2">
-        <div class="col">
-          {{ form.med_code }}
-        </div>
-        <div class="col">
-          {{ form.batch_date }}
-        </div>
-        <div class="col">
-          {{ form.supplier_code }}
-        </div>
-        <div class="col">
-          {{ form.seq }}
-        </div>
-      </div>
+<div class="max-w-5xl mx-auto my-12">
+  <div class="bg-white p-8 md:p-12 rounded-lg shadow-md border border-gray-200">
+    
+    <div class="mb-8">
+      <h2 class="font-formal-heading text-3xl font-bold text-gray-900">Register New Medication</h2>
+      <p class="text-gray-500 mt-2">Please fill out the form below to add a new item to the inventory.</p>
     </div>
-    {% for field in form %}
-      {% if field.name != 'med_code' and field.name != 'batch_date' and field.name != 'supplier_code' and field.name != 'seq' %}
-        <div class="mb-3">
-          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-          {{ field }}
-          {% if field.help_text %}
-            <small class="form-text text-muted">{{ field.help_text }}</small>
-          {% endif %}
+    <hr class="mb-8">
 
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <!-- Batch Number Information Section -->
+      <fieldset class="mb-8">
+        <legend class="text-lg font-semibold text-gray-800 mb-4">Batch Identification</legend>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div>
+            <label for="{{ form.med_code.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Med Code</label>
+            {{ form.med_code }}
+            {% for error in form.med_code.errors %}<p class="text-red-600 text-xs mt-1">{{ error }}</p>{% endfor %}
+          </div>
+          <div>
+            <label for="{{ form.batch_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Batch Date</label>
+            {{ form.batch_date }}
+            {% for error in form.batch_date.errors %}<p class="text-red-600 text-xs mt-1">{{ error }}</p>{% endfor %}
+          </div>
+          <div>
+            <label for="{{ form.supplier_code.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Supplier Code</label>
+            {{ form.supplier_code }}
+            {% for error in form.supplier_code.errors %}<p class="text-red-600 text-xs mt-1">{{ error }}</p>{% endfor %}
+          </div>
+          <div>
+            <label for="{{ form.seq.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Sequence</label>
+            {{ form.seq }}
+            {% for error in form.seq.errors %}<p class="text-red-600 text-xs mt-1">{{ error }}</p>{% endfor %}
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- General Medicine Details Section -->
+      <fieldset>
+        <legend class="text-lg font-semibold text-gray-800 mb-4">Medication Details</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          {% for field in form %}
+            {% if field.name != 'med_code' and field.name != 'batch_date' and field.name != 'supplier_code' and field.name != 'seq' %}
+              <div class="mb-4 {% if field.name == 'description' %}md:col-span-2{% endif %}">
+                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                  <p class="text-gray-500 text-xs mt-1">{{ field.help_text }}</p>
+                {% endif %}
+                {% for error in field.errors %}
+                  <p class="text-red-600 text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <!-- Form Actions -->
+      <div class="mt-10 pt-6 border-t border-gray-200 flex items-center justify-end gap-4">
+        <a href="{% url 'medicine_table' %}" class="text-sm font-semibold text-gray-600 hover:text-gray-800 transition">Cancel</a>
+        <button type="submit" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-6 rounded-md text-sm transition shadow-sm">Save Medicine</button>
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-md mt-6" role="alert">
+          <strong class="font-bold">Error:</strong>
+          <ul class="list-disc list-inside mt-2 text-sm">
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
         </div>
       {% endif %}
-    {% endfor %}
-    <button type="submit" class="btn btn-primary" style="margin-bottom: 10px;">Save Medicine</button>
-    <a href="{% url 'medicine_table' %}" class="back-link">← Back to Medicine List</a>
-
-              {% if form.errors %}
-            <div class="text-danger">Please correct the errors below.</div>
-            {{ form.errors }}
-          {% endif %}
-  </form>
+    </form>
+  </div>
 </div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // Standardize form field styling
+    const fields = document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], select, textarea');
+    fields.forEach(field => {
+      field.classList.add(
+        'mt-1', 'block', 'w-full', 'px-3', 'py-2', 'bg-white', 
+        'border', 'border-gray-300', 'rounded-md', 'shadow-sm', 
+        'text-sm', 'placeholder-gray-400',
+        'focus:outline-none', 'focus:ring-1', 'focus:ring-slate-500', 'focus:border-slate-500'
+      );
+    });
+
+    // Auto-population logic
     const categoryField = document.getElementById("id_category");
     const medCodeField = document.getElementById("id_med_code");
     const manufactureDateField = document.getElementById("id_manufacture_date");
     const batchDateField = document.getElementById("id_batch_date");
 
-    // Auto-fill med_code
-    if (categoryField && medCodeField) {
-      categoryField.addEventListener('change', function() {
-        const selected = categoryField.options[categoryField.selectedIndex].text;
-        medCodeField.value = selected.substring(0, 5).toUpperCase();
-      });
+    function updateMedCode() {
       if (categoryField.value) {
-        const selected = categoryField.options[categoryField.selectedIndex].text;
-        medCodeField.value = selected.substring(0, 5).toUpperCase();
+        const selectedOptionText = categoryField.options[categoryField.selectedIndex].text;
+        medCodeField.value = selectedOptionText.substring(0, 5).toUpperCase();
       }
     }
 
-    // Auto-fill batch_date from manufacture_date
-    if (manufactureDateField && batchDateField) {
-      manufactureDateField.addEventListener('change', function() {
-        if (manufactureDateField.value) {
-          // manufactureDateField.value is in 'YYYY-MM-DD'
-          batchDateField.value = manufactureDateField.value.replace(/-/g, '');
-        }
-      });
-      // Trigger on page load if manufacture_date is pre-selected
+    function updateBatchDate() {
       if (manufactureDateField.value) {
         batchDateField.value = manufactureDateField.value.replace(/-/g, '');
       }
+    }
+
+    // New price validation logic
+    const costPriceField = document.getElementById("id_cost_price");
+    const sellingPriceField = document.getElementById("id_selling_price");
+    
+    // Function to create or update error message
+    function validatePrices() {
+      // Remove any existing error message
+      const existingError = document.getElementById("price-error");
+      if (existingError) {
+        existingError.remove();
+      }
+      
+      // Get the values as numbers
+      const costPrice = parseFloat(costPriceField.value) || 0;
+      const sellingPrice = parseFloat(sellingPriceField.value) || 0;
+      
+      // Check if cost price is greater than selling price
+      if (costPrice > sellingPrice && sellingPrice > 0) {
+        // Create error message
+        const errorElement = document.createElement("p");
+        errorElement.id = "price-error";
+        errorElement.className = "text-red-600 text-xs mt-1";
+        errorElement.textContent = "Warning: Cost price is greater than selling price. This will result in a loss.";
+        
+        // Add error after the selling price field
+        sellingPriceField.parentNode.appendChild(errorElement);
+        
+        // Add red border to both fields
+        costPriceField.classList.add("border-red-500");
+        sellingPriceField.classList.add("border-red-500");
+      } else {
+        // Remove red border if validation passes
+        costPriceField.classList.remove("border-red-500");
+        sellingPriceField.classList.remove("border-red-500");
+      }
+    }
+
+    // Add event listeners for price fields
+    if (costPriceField && sellingPriceField) {
+      costPriceField.addEventListener('input', validatePrices);
+      sellingPriceField.addEventListener('input', validatePrices);
+      validatePrices(); // Run on load
+    }
+
+    // Existing event listeners
+    if (categoryField && medCodeField) {
+      categoryField.addEventListener('change', updateMedCode);
+      updateMedCode(); // Run on load
+    }
+
+    if (manufactureDateField && batchDateField) {
+      manufactureDateField.addEventListener('change', updateBatchDate);
+      updateBatchDate(); // Run on load
     }
   });
 </script>

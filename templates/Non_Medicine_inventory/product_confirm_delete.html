@@ -1,0 +1,39 @@
+{% extends 'Medicine_inventory/base.html' %}
+
+{% block title %}Delete {{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+        <a href="{% url 'non_medicine:product_detail' slug=product.slug %}" class="text-blue-600 hover:text-blue-800 flex items-center">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Back to Product
+        </a>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6 max-w-lg mx-auto">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+            <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+        </div>
+        
+        <h1 class="text-xl font-bold text-center text-slate-800 mb-4">Confirm Deletion</h1>
+        
+        <p class="text-center mb-6 text-slate-600">
+            Are you sure you want to delete the product <strong>{{ product.name }}</strong>?<br>
+            This action cannot be undone.
+        </p>
+        
+        <form method="post" class="flex justify-center gap-4">
+            {% csrf_token %}
+            <a href="{% url 'non_medicine:product_detail' slug=product.slug %}" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-medium py-2 px-4 rounded-md">
+                Cancel
+            </a>
+            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md">
+                Delete
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
