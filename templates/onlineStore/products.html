@@ -9,7 +9,7 @@
       <!-- Sidebar Filters -->
       <div class="lg:col-span-1">
         <!-- This form submits a GET request, reloading the page with filter parameters in the URL -->
-        <form method="get" class="w-full bg-white shadow-md rounded-lg p-6 space-y-6">
+        <form method="get" class="w-full bg-white  rounded-lg p-6 space-y-6">
           
           <!-- Search Box -->
           <div>
@@ -83,10 +83,11 @@
                 2. Image uses product.get_image.url with a safety check
                 3. Name and Price use the helper methods get_name and get_price
               -->
-              <a href="{% url 'onlineStore:product_detail' pk=product.pk %}" class="group">
-                <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
+              
+              <a href="{% url 'onlineStore:product_detail' pk=product.pk %}" class="block group relative">
+                <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
                   {% if product.image_url %}
-                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="h-full w-full object-cover object-center group-hover:opacity-75">
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="h-full w-full object-cover object-center lg:h-full lg:w-full">
                   {% else %}
                     <!-- Placeholder image if no image is available -->
                     <img src="https://via.placeholder.com/300" alt="No image available" class="h-full w-full object-cover object-center">

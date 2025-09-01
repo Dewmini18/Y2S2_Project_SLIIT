@@ -1,88 +1,137 @@
 {% extends './onlineStore_base.html' %}
-{% block title %}MediSync - Online Store{% endblock %}
+{% load static %} <!-- Load the static tag for images -->
+{% block title %}MediSync - Your Trusted Online Pharmacy{% endblock %}
 
 {% block content %}
+<!-- =================================== -->
+<!-- Hero Section: Main Welcome Area -->
+<!-- =================================== -->
 <div class="bg-white">
-  
-  <div class="relative isolate px-6 pt-14 lg:px-8">
-    <div aria-hidden="true" class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
-      <div style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" class="relative left-[calc(50%-11rem)] aspect-1155/678 w-144.5 -translate-x-1/2 rotate-30 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-288.75"></div>
-    </div>
-    <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
-      <div class="hidden sm:mb-8 sm:flex sm:justify-center">
-        <div class="relative rounded-full px-3 py-1 text-sm/6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
-          Announcing our next round of funding. <a href="#" class="font-semibold text-indigo-600"><span aria-hidden="true" class="absolute inset-0"></span>Read more <span aria-hidden="true">&rarr;</span></a>
+  <div class="relative isolate px-4 pt-14 lg:px-8 bg-white">
+    <div class="mx-auto h-screen flex flex-col lg:flex-row items-center justify-center gap-12">
+
+      <!-- Hero Image -->
+      <div class="w-full lg:w-1/2 px-4 lg:px-0">
+        <img src="{% static 'onlineStore/pharmacist-work.jpg' %}" alt="Hero Image"
+            class="w-full max-h-[80vh] object-cover rounded-lg shadow-lg">
+      </div>
+
+      <!-- Hero Text -->
+      <div class="w-full lg:w-1/2 text-center lg:text-left px-4">
+        <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+          Health, Delivered to <span class="text-indigo-600">Your Doorstep.</span>
+        </h1>
+        <p class="mt-6 text-lg leading-8 text-gray-600">
+          Your trusted online pharmacy for prescription medications, wellness products, and expert advice.
+          Fast, safe, and reliable service you can count on.
+        </p>
+        <div class="mt-10 flex flex-col sm:flex-row items-center lg:justify-start justify-center gap-4">
+          <a href="#"
+            class="rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            Upload Prescription
+          </a>
+          <a href="{% url 'onlineStore:products' %}" class="text-sm font-semibold leading-6 text-gray-600">
+            Shop All Products <span aria-hidden="true">→</span>
+          </a>
         </div>
       </div>
-      <div class="text-center">
-        <h1 class="text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-7xl">Your Trusted Online Pharmacy <span class="text-indigo-600">– Fast, Safe & Reliable. </span></h1>
-        <p class="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet fugiat veniam occaecat.</p>
-        <div class="mt-10 flex items-center justify-center gap-x-6">
-          <a href="#" class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Upload Prescription</a>
-          <a href="#" class="text-sm/6 font-semibold text-gray-900">Find Products <span aria-hidden="true">→</span></a>
-        </div>
-      </div>
     </div>
-    <div aria-hidden="true" class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
-      <div style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" class="relative left-[calc(50%+3rem)] aspect-1155/678 w-144.5 -translate-x-1/2 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-288.75"></div>
+  </div>
+
+</div>
+
+<!-- =================================== -->
+<!-- Trust-Building Features Section -->
+<!-- =================================== -->
+<div class="bg-gray-50 py-24 sm:py-32">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto max-w-2xl lg:text-center">
+      <h2 class="text-base font-semibold leading-7 text-indigo-600">Your Health, Our Priority</h2>
+      <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Why Choose MediSync?</p>
+      <p class="mt-6 text-lg leading-8 text-gray-600">We are committed to providing you with a seamless and secure healthcare experience from the comfort of your home.</p>
+    </div>
+    <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+      <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+        <!-- Feature 1 -->
+        <div class="relative pl-16">
+          <dt class="text-base font-semibold leading-7 text-gray-900">
+            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" /></svg>
+            </div>
+            Licensed Pharmacists
+          </dt>
+          <dd class="mt-2 text-base leading-7 text-gray-600">All prescriptions are verified by our team of certified pharmacy professionals to ensure your safety.</dd>
+        </div>
+        <!-- Feature 2 -->
+        <div class="relative pl-16">
+          <dt class="text-base font-semibold leading-7 text-gray-900">
+            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+            </div>
+            Secure & Confidential
+          </dt>
+          <dd class="mt-2 text-base leading-7 text-gray-600">Your personal and health information is protected with industry-leading encryption and privacy standards.</dd>
+        </div>
+        <!-- Feature 3 -->
+        <div class="relative pl-16">
+          <dt class="text-base font-semibold leading-7 text-gray-900">
+            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
+            </div>
+            Fast Island-wide Delivery
+          </dt>
+          <dd class="mt-2 text-base leading-7 text-gray-600">Receive your orders quickly and discreetly, delivered right to your home or office.</dd>
+        </div>
+        <!-- Feature 4 -->
+        <div class="relative pl-16">
+          <dt class="text-base font-semibold leading-7 text-gray-900">
+            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.17 48.17 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.397 48.397 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.769z" /></svg>
+            </div>
+            Expert Health Advice
+          </dt>
+          <dd class="mt-2 text-base leading-7 text-gray-600">Access our blog and resources, or connect with a pharmacist for professional health guidance.</dd>
+        </div>
+      </dl>
     </div>
   </div>
 </div>
 
+<!-- ======================================== -->
+<!-- Featured Products Section (Dynamic) -->
+<!-- ======================================== -->
+<div class="bg-white">
+  <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+    <h2 class="text-2xl font-bold tracking-tight text-gray-900">Featured Products</h2>
+    <p class="mt-2 text-lg leading-8 text-gray-600">Hand-picked essentials for your health and wellness.</p>
 
+    <!-- The Grid now loops through 'featured_products' from your view -->
+    <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+      
+      {% for product in featured_products %}
+        <a href="{% url 'onlineStore:product_detail' pk=product.pk %}" class="block group relative">
+          <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
+            <img src="{{ product.image_url }}" alt="{{ product.name }}" class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+          </div>
+          <div class="mt-4 flex justify-between">
+            <div>
+              <h3 class="text-sm text-gray-700">
+                {{ product.name }}
+              </h3>
+              <p class="mt-1 text-sm text-gray-500">{{ product.brand }}</p>
+            </div>
+            <p class="text-sm font-medium text-gray-900">Rs. {{ product.price|floatformat:2 }}</p>
+          </div>
+        </a>
+      {% empty %}
+        <!-- This message shows if you haven't marked any products as 'featured' -->
+        <div class="col-span-full text-center text-gray-500">
+          <p>Featured products will be displayed here soon. Please check back later!</p>
+        </div>
+      {% endfor %}
 
-<div class="bg-gray-100">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-2xl py-16 sm:py-24 lg:max-w-none lg:py-32">
-      <h2 class="text-2xl font-bold text-gray-900">Collections</h2>
-
-      <div class="mt-6 space-y-12 lg:grid lg:grid-cols-4 lg:space-y-0 lg:gap-x-6">
-        <div class="group relative">
-          <img src="https://tailwindcss.com/plus-assets/img/ecommerce-images/home-page-02-edition-01.jpg" alt="Desk with leather desk pad, walnut desk organizer, wireless keyboard and mouse, and porcelain mug." class="w-full rounded-lg bg-white object-cover group-hover:opacity-75 max-sm:h-80 sm:aspect-2/1 lg:aspect-square" />
-          <h3 class="mt-6 text-sm text-gray-500">
-            <a href="#">
-              <span class="absolute inset-0"></span>
-              Prescription Medicines
-            </a>
-          </h3>
-          <p class="text-base font-semibold text-gray-900">Work from home accessories</p>
-        </div>
-        <div class="group relative">
-          <img src="https://tailwindcss.com/plus-assets/img/ecommerce-images/home-page-02-edition-02.jpg" alt="Wood table with porcelain mug, leather journal, brass pen, leather key ring, and a houseplant." class="w-full rounded-lg bg-white object-cover group-hover:opacity-75 max-sm:h-80 sm:aspect-2/1 lg:aspect-square" />
-          <h3 class="mt-6 text-sm text-gray-500">
-            <a href="#">
-              <span class="absolute inset-0"></span>
-              Over-the-Counter
-            </a>
-          </h3>
-          <p class="text-base font-semibold text-gray-900">Journals and note-taking</p>
-        </div>
-        <div class="group relative">
-          <img src="https://tailwindcss.com/plus-assets/img/ecommerce-images/home-page-02-edition-03.jpg" alt="Collection of four insulated travel bottles on wooden shelf." class="w-full rounded-lg bg-white object-cover group-hover:opacity-75 max-sm:h-80 sm:aspect-2/1 lg:aspect-square" />
-          <h3 class="mt-6 text-sm text-gray-500">
-            <a href="#">
-              <span class="absolute inset-0"></span>
-              Health & Wellness (Vitamins, Supplements)
-            </a>
-          </h3>
-          <p class="text-base font-semibold text-gray-900">Daily commute essentials</p>
-        </div>
-        <div class="group relative">
-          <img src="https://tailwindcss.com/plus-assets/img/ecommerce-images/home-page-02-edition-03.jpg" alt="Collection of four insulated travel bottles on wooden shelf." class="w-full rounded-lg bg-white object-cover group-hover:opacity-75 max-sm:h-80 sm:aspect-2/1 lg:aspect-square" />
-          <h3 class="mt-6 text-sm text-gray-500">
-            <a href="#">
-              <span class="absolute inset-0"></span>
-              Baby & Mother Care
-            </a>
-          </h3>
-          <p class="text-base font-semibold text-gray-900">Daily commute essentials</p>
-        </div>
-        
-      </div>
     </div>
   </div>
 </div>
-
-
 
 {% endblock %}

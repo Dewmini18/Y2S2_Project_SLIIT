@@ -1,0 +1,94 @@
+{% extends './onlineStore_base.html' %}
+{% block title %}MediSync - Online Store{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+  <div class="pt-6">
+    
+    <!-- Product Info -->
+    <div class="mx-auto max-w-2xl px-4 pt-10 pb-16 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto_auto_1fr] lg:gap-x-8 lg:px-8 lg:pt-16 lg:pb-24">
+
+      <!-- Product Title & Brand -->
+      <div class="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
+        <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{{ product.name }}</h1>
+        <p class="mt-2 text-base text-gray-700">{{ product.brand }}</p>
+      </div>
+
+      <!-- Price & Purchase Form -->
+      <div class="mt-4 lg:row-span-3 lg:mt-0">
+        <h2 class="sr-only">Product information</h2>
+        <p class="text-3xl tracking-tight text-gray-900">LKR {{ product.selling_price }}</p>
+
+        <!-- Add to Cart Form -->
+        <form method="post" action="{% url 'add_to_cart' product.id %}" class="mt-10">
+          {% csrf_token %}
+
+          <!-- Color Options -->
+          <div>
+            <h3 class="text-sm font-medium text-gray-900">Color</h3>
+            <fieldset aria-label="Choose a color" class="mt-4">
+              <div class="flex items-center gap-x-3">
+                {% for color, label in [('white', 'White'), ('gray', 'Gray'), ('black', 'Black')] %}
+                  <div class="flex rounded-full outline -outline-offset-1 outline-black/10">
+                    <input type="radio" name="color" value="{{ color }}" {% if forloop.first %}checked{% endif %} aria-label="{{ label }}"
+                      class="size-8 appearance-none rounded-full bg-{{ color }} {% if color == 'gray' %}bg-gray-200{% endif %} {% if color == 'black' %}bg-gray-900{% endif %} forced-color-adjust-none checked:outline-2 checked:outline-offset-2 checked:outline-gray-400 focus-visible:outline-3 focus-visible:outline-offset-3" />
+                  </div>
+                {% endfor %}
+              </div>
+            </fieldset>
+          </div>
+
+          <!-- Quantity Selector -->
+          <div class="mt-10">
+            <h3 class="text-sm font-medium text-gray-900 mb-2">Quantity</h3>
+            <div class="flex items-center space-x-4">
+              <button type="button" onclick="decreaseQuantity()" class="px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">–</button>
+              <input id="quantityInput" name="quantity" type="text" value="1" readonly class="w-12 text-center border border-gray-300 rounded-md text-gray-900 bg-white" />
+              <button type="button" onclick="increaseQuantity()" class="px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">+</button>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit"
+            class="mt-10 w-full flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            Buy
+          </button>
+        </form>
+      </div>
+
+      <!-- Product Image & Description -->
+      <div class="mt-10 lg:col-span-2 lg:mt-0">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="rounded-lg max-w-xl mb-6" />
+
+        <div>
+          <h2 class="text-lg font-semibold text-gray-900">Description</h2>
+          <p class="mt-2 text-base text-gray-700">{{ product.description }}</p>
+        </div>
+
+        <div class="mt-6 space-y-2">
+          <p><span class="font-bold">Category:</span> {{ product.category }}</p>
+          <p><span class="font-bold">Dosage:</span> {{ product.dosage }}</p>
+          <p><span class="font-bold">Medicine Type:</span> {{ product.medicine_type }}</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Quantity Control Script -->
+<script>
+  function increaseQuantity() {
+    const input = document.getElementById('quantityInput');
+    input.value = parseInt(input.value) + 1;
+  }
+
+  function decreaseQuantity() {
+    const input = document.getElementById('quantityInput');
+    if (parseInt(input.value) > 1) {
+      input.value = parseInt(input.value) - 1;
+    }
+  }
+</script>
+{% endblock %}
+

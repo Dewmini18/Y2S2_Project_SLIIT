@@ -1,109 +1,160 @@
 {% extends './onlineStore_base.html' %}
-{% block title %}MediSync - Online Store{% endblock %}
+{% load static %}
+{% block title %}{{ product.name }} - MediSync{% endblock %}
 
 {% block content %}
-
 <div class="bg-white">
   <div class="pt-6">
-
-    <!-- Image gallery -->
-    <!-- <div class="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-8 lg:px-8">
-      <img src="https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-02-secondary-product-shot.jpg" alt="Two each of gray, white, and black shirts laying flat." class="row-span-2 aspect-3/4 size-full rounded-lg object-cover max-lg:hidden" />
-      <img src="https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-02-tertiary-product-shot-01.jpg" alt="Model wearing plain black basic tee." class="col-start-2 aspect-3/2 size-full rounded-lg object-cover max-lg:hidden" />
-      <img src="https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-02-tertiary-product-shot-02.jpg" alt="Model wearing plain gray basic tee." class="col-start-2 row-start-2 aspect-3/2 size-full rounded-lg object-cover max-lg:hidden" />
-      <img src="https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-02-featured-product-shot.jpg" alt="Model wearing plain white basic tee." class="row-span-2 aspect-4/5 size-full object-cover sm:rounded-lg lg:aspect-3/4" />
-    </div> -->
-
-    <!-- Product info -->
-    <div class="mx-auto max-w-2xl px-4 pt-10 pb-16 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto_auto_1fr] lg:gap-x-8 lg:px-8 lg:pt-16 lg:pb-24">
+    <!-- Main Product Info Grid -->
+    <div class="mx-auto max-w-2xl px-4 pb-16 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8 lg:pb-24">
+      
+      <!-- Column 1 & 2: Product Name, Brand, Image, and Details -->
       <div class="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
-        <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{{ product.name }}</h1>
-      </div>
-      <div class="mt-4 lg:col-span-2 lg:mt-0">
-        <p class="mt-1 text-base text-gray-700">{{ product.brand }}</p>
-      </div>
-      <!-- image with limited width -->
+        
+        <!-- Product Name & Brand -->
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{{ product.name }}</h1>
+          <p class="mt-2 text-base text-gray-700">by <span class="font-semibold">{{ product.brand }}</span></p>
+        </div>
 
-      <!-- product details - description, category, dosage, medicine_type -->
-      <div class="mt-4 lg:col-span-2 lg:mt-5">
-        <img src="{{ product.image.url }}" alt="{{ product.name }}" class=" rounded-lg max-w-xl"  />
-        <h2>Description</h2>
-        <p class="mt-1 text-base text-gray-700">{{ product.description }}</p>
-        <div class="mt-4 lg:col-span-2 lg:mt-5">
-          <h3><span class="font-bold">Category: </span> {{ product.category }}</h3>
-          <h3><span class="font-bold">Dosage: </span> {{ product.dosage }}</h3>
-          <h3><span class="font-bold">Medicine Type: </span> {{ product.medicine_type }}</h3>
+        <!-- Product Image -->
+        <div class="mt-8">
+          <img src="{{ product.image_url }}" alt="{{ product.name }}" class="h-full w-full rounded-lg object-cover object-center max-w-lg mx-auto" />
+        </div>
+
+        <!-- Details Section -->
+        <div class="mt-10">
+          <div>
+            <h3 class="text-xl font-medium text-gray-900">Description</h3>
+            <div class="space-y-6">
+              <p class="text-base text-gray-900">{{ product.description }}</p>
+            </div>
+          </div>
+
+          <!--
+            CORRECTION: Accessing data from the correct related model.
+            We use `product.medicine.dosage` instead of `product.dosage`.
+            The `if product.product_type == 'medicine'` ensures this section only
+            appears for medicine products.
+          -->
+          {% if product.product_type == 'medicine' and product.medicine %}
+            <div class="mt-10">
+              <h3 class="text-xl font-medium text-gray-900">Medical Details</h3>
+              <dl class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+                <div class="border-t border-gray-200 pt-4">
+                  <dt class="font-medium text-gray-900">Category</dt>
+                  <dd class="mt-2 text-sm text-gray-500">{{ product.medicine.get_category_display }}</dd>
+                </div>
+                <div class="border-t border-gray-200 pt-4">
+                  <dt class="font-medium text-gray-900">Dosage</dt>
+                  <dd class="mt-2 text-sm text-gray-500">{{ product.medicine.dosage }}</dd>
+                </div>
+                <div class="border-t border-gray-200 pt-4">
+                  <dt class="font-medium text-gray-900">Medicine Type</dt>
+                  <dd class="mt-2 text-sm text-gray-500">{{ product.medicine.get_medicine_type_display }}</dd>
+                </div>
+                {% if product.medicine.medicine_type == 'RX' %}
+                <div class="border-t border-gray-200 pt-4 sm:col-span-2">
+                  <dt class="font-medium text-gray-900">Prescription Required</dt>
+                  <dd class="mt-2 text-sm text-yellow-600">A valid prescription is required to purchase this item. Please upload it during checkout.</dd>
+                </div>
+                {% endif %}
+              </dl>
+            </div>
+          {% endif %}
         </div>
       </div>
 
-      <!-- Options -->
+      <!-- Column 3: Purchase Options (Price, Quantity, Add to Cart) -->
       <div class="mt-4 lg:row-span-3 lg:mt-0">
         <h2 class="sr-only">Product information</h2>
-        <p class="text-3xl tracking-tight text-gray-900">LKR {{ product.selling_price }}</p>
+        <p class="text-3xl tracking-tight text-gray-900">Rs. {{ product.price|floatformat:2 }}</p>
 
+        <!-- Stock Information -->
+        <div class="mt-6">
+          {% if product.stock > 10 %}
+            <p class="text-sm text-green-600">In Stock</p>
+          {% elif product.stock > 0 %}
+            <p class="text-sm text-yellow-600">Low Stock (Only {{ product.stock }} left!)</p>
+          {% else %}
+            <p class="text-sm text-red-600">Out of Stock</p>
+          {% endif %}
+        </div>
         
-        
-        <form class="mt-10" method="post" action="{% url 'add_to_cart' product.id %}">
+        <!-- Add to Cart Form -->
+        <!-- NOTE: This assumes you have a 'add_to_cart' URL. Make sure it's correct. -->
+        <form class="mt-10" method="post" action="{% url 'onlineStore:add_to_cart' product.pk %}">
           {% csrf_token %}
-          <div>
-            <h3 class="text-sm font-medium text-gray-900">Color</h3>
-
-            <fieldset aria-label="Choose a color" class="mt-4">
-              <div class="flex items-center gap-x-3">
-                <div class="flex rounded-full outline -outline-offset-1 outline-black/10">
-                  <input type="radio" name="color" value="white" checked aria-label="White" class="size-8 appearance-none rounded-full bg-white forced-color-adjust-none checked:outline-2 checked:outline-offset-2 checked:outline-gray-400 focus-visible:outline-3 focus-visible:outline-offset-3" />
-                </div>
-                <div class="flex rounded-full outline -outline-offset-1 outline-black/10">
-                  <input type="radio" name="color" value="gray" aria-label="Gray" class="size-8 appearance-none rounded-full bg-gray-200 forced-color-adjust-none checked:outline-2 checked:outline-offset-2 checked:outline-gray-400 focus-visible:outline-3 focus-visible:outline-offset-3" />
-                </div>
-                <div class="flex rounded-full outline -outline-offset-1 outline-black/10">
-                  <input type="radio" name="color" value="black" aria-label="Black" class="size-8 appearance-none rounded-full bg-gray-900 forced-color-adjust-none checked:outline-2 checked:outline-offset-2 checked:outline-gray-900 focus-visible:outline-3 focus-visible:outline-offset-3" />
-                </div>
-              </div>
-            </fieldset>
-          </div>
-
+          
+          <!-- Quantity Selector -->
           <div class="mt-10">
             <div class="flex items-center justify-between">
               <h3 class="text-sm font-medium text-gray-900">Quantity</h3>
             </div>
-
-            <div class="mt-4 flex items-center space-x-4">
-              <button type="button" onclick="decreaseQuantity()" class="px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">
-                –
-              </button>
-
-              <input id="quantityInput" type="text" value="1" readonly
-                class="w-12 text-center border border-gray-300 rounded-md text-gray-900 bg-white" />
-
-              <button type="button" onclick="increaseQuantity()" class="px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">
-                +
-              </button>
+            <div class="mt-2 flex items-center space-x-2">
+              <button type="button" onclick="changeQuantity(-1)" class="h-10 w-10 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">-</button>
+              <input id="quantityInput" name="quantity" type="number" value="1" readonly class="h-10 w-16 text-center border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" />
+              <button type="button" onclick="changeQuantity(1)" class="h-10 w-10 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">+</button>
             </div>
           </div>
-
-          <button type="submit" class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">Buy</button>
+          
+          <!-- Submit Button -->
+          <button type="submit" {% if product.stock <= 0 %}disabled{% endif %} class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            Add to bag
+          </button>
         </form>
       </div>
-
-      
     </div>
+
+    <!-- Related Products Section -->
+    {% if related_products %}
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+      <h2 class="text-2xl font-bold tracking-tight text-gray-900">Customers also viewed</h2>
+      <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+        {% for related_product in related_products %}
+        <div class="group relative">
+          <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
+            <img src="{{ related_product.image_url }}" alt="{{ related_product.name }}" class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+          </div>
+          <div class="mt-4 flex justify-between">
+            <div>
+              <h3 class="text-sm text-gray-700">
+                <a href="{% url 'onlineStore:product_detail' pk=related_product.pk %}">
+                  <span aria-hidden="true" class="absolute inset-0"></span>
+                  {{ related_product.name }}
+                </a>
+              </h3>
+              <p class="mt-1 text-sm text-gray-500">{{ related_product.brand }}</p>
+            </div>
+            <p class="text-sm font-medium text-gray-900">Rs. {{ related_product.price|floatformat:2 }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
   </div>
 </div>
 
-
-<!-- increases & decrease -->
 <script>
-  function increaseQuantity() {
+  function changeQuantity(amount) {
     const input = document.getElementById('quantityInput');
-    input.value = parseInt(input.value) + 1;
-  }
-
-  function decreaseQuantity() {
-    const input = document.getElementById('quantityInput');
-    if (parseInt(input.value) > 1) {
-      input.value = parseInt(input.value) - 1;
+    let currentValue = parseInt(input.value);
+    let newValue = currentValue + amount;
+    
+    // Ensure quantity doesn't go below 1
+    if (newValue < 1) {
+      newValue = 1;
     }
+    
+    // Optional: Prevent going above max stock. Requires passing stock to JS.
+    // const maxStock = {{ product.stock }}; 
+    // if (newValue > maxStock) {
+    //   newValue = maxStock;
+    // }
+    
+    input.value = newValue;
   }
 </script>
 

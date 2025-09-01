@@ -214,26 +214,38 @@ def products(request):
 
 
 # Product detail view (Simplified)
+from django.shortcuts import get_object_or_404, render
+from .models import Product
+
 def product_detail(request, pk):
+    """
+    Display detailed information about a specific product.
+    """
     product = get_object_or_404(
         Product.objects.select_related('medicine', 'non_medical_product'), 
         pk=pk, 
         available_online=True
     )
     
-    # Get related products from the same category
-    related_products = Product.objects.filter(
-        available_online=True,
-        product_type=product.product_type,
-        # Use Q object to check category in the correct related model
-        **{
-            f'{product.product_type}__category': product.get_category()
-        }
-    ).exclude(pk=pk)[:4]
-    
-    # REFACTOR: No need for `additional_info`.
-    # Use the model's helper methods directly in the template.
-    # This makes the view simpler and keeps logic in the model.
+    related_products = []
+    # Get the actual linked inventory item to find its category
+    inventory_item = product.medicine or product.non_medical_product
+
+    if inventory_item:
+        # We need to use the lowercase field name ('medicine' or 'non_medical_product')
+        # for the database query. The model's product_type field has the wrong case.
+        
+        # FIX: Explicitly use the lowercase field name for the query lookup.
+        # We also need to map the model's Choice value to the field name.
+        product_type_field_name = 'medicine' if product.product_type == 'Medicine' else 'non_medical_product'
+
+        related_products = Product.objects.filter(
+            available_online=True,
+            product_type=product.product_type,
+            # This is the corrected dynamic filter
+            **{f'{product_type_field_name}__category': inventory_item.category}
+        ).exclude(pk=pk)[:4]
+
     context = {
         'product': product,
         'related_products': related_products,
